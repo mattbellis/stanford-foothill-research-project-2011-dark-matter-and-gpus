@@ -2,19 +2,17 @@
 #include<cmath>
 #include<fstream>
 #include<sstream>
+#include<cstdlib>
+
 
 #define DAY_HOUR 24
 #define HOUR_SEC 3600
 
 using namespace std;
 
-//#include "config_file_0.dat"
-//#include "config_file_1.dat"
-//#include "config_file_2.dat"
-//#include "sun_and_earth_config_file.dat"
-
-//double const GRAV_CONST = 6.6742e-11;
 double const PI = 3.14;
+
+////////////////////////////////////////////////////////////////////////////////
 
 long double GravForce(long double grav, long double mass1, 
                       long double mass2, long double dist);
@@ -25,14 +23,27 @@ double Time(double velocity, long double revolution);
 double ChangeSecToDays(double time_sec);
 long double Distance(long double x1, long double y1, long double z1, 
                      long double x2, long double y2, long double z2);
-int main()
+
+
+////////////////////////////////////////////////////////////////////////////////
+int main(int argc, char **argv)
 {
+
    long double mass1, mass2, GRAV_CONST, x1, x2, y1, y2, z1, z2, 
                dist, force, velocity, revolution;
    double accel1, accel2, time; 
    string line;
+
+   if (argc < 2)
+   {
+	cerr << endl;
+        cerr << "Must pass in config file on command line!" << endl;
+        cerr << "Usage: " << argv[0] << " <config file> " << endl;
+	cerr << endl;
+        exit(1);
+   }
    
-   ifstream infile("Assignment0/config_file_0.dat");
+   ifstream infile(argv[1]);
    
    if(infile.good())
    {
@@ -59,7 +70,6 @@ int main()
    cout << "Second body has mass " << mass2 << " kg, abscissa " << x2
       << " \n\tordinate " << y2 << " and applicate " << z2 << endl << endl;
   
-   //dist = 3.84403e8;
    
    dist = Distance(x1, y1, z1, x2, y2, z2);
 
