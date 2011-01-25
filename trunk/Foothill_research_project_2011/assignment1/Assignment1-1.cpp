@@ -63,10 +63,11 @@ int main(int argc, char **argv)
    cout.precision(5); 
 
    //display the gravitational cont, and mass of two particles
-   DisplayMassConst(mass1, mass2, GRAV_CONST);
+   //DisplayMassConst(mass1, mass2, GRAV_CONST);
    
    //display all parameters bevore mooving
-   cout << time_to_hit << " " << force; 
+   // Commenting this out for the time being.
+   //cout << time_to_hit << " " << force; 
 
    DisplayCoordinates(x1, y1, z1, vel_init1, accel1);
    DisplayCoordinates(x2, y2, z2, vel_init2, accel2);
@@ -114,7 +115,8 @@ int main(int argc, char **argv)
       vel_init1 = vel_fin1;
       vel_init2 = vel_fin2;
       
-      cout << time_to_hit << "  " << force / pow(10.0, 20) << "e20  ";
+      //cout << time_to_hit << "  " << force / pow(10.0, 20) << "e20  ";
+      //cout << time_to_hit << ", " << force << ",  ";
       DisplayCoordinates(dist_total1, y1, z1, vel_fin1, accel1); 
       DisplayCoordinates(dist - dist_total2, y2, z2, vel_fin2, accel2); 
 
@@ -162,6 +164,6 @@ void DisplayCoordinates(long double x, long double y, long double z,
 	double vel, double accel)
        
 {
-   cout <<  x << "  " << y << "  " << z << "  " << vel << "  " << accel << "  ";
+   cout <<  x << "," << y << "," << z << "," << vel << "," << accel << ",";
 }
 
