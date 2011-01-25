@@ -10,7 +10,8 @@
 using namespace std;    
 
 double const PI = 3.14;  
-////////////////////////////////////////////////////////////////////////////////
+
+//methods definitions
 long double GravForce(long double grav, long double mass1,
          long double mass2, long double dist);  
 double Acceleration(long double mass, long double force); 
@@ -21,20 +22,16 @@ long double DistancePart(double vel_fin, double vel_init, double time);
 double ChangeSecToDays(double time_sec);   
 void DisplayMassConst(long double mass1, long double mass2, 
          long double grav_const);
-void DisplayCoordinates(long double x1, long double y1, long double z1,
-         long double x2, long double y2, long double z2);
+void DisplayCoordinates(long double x, long double y, long double z, double vel, double accel); 
 
-void DisplayAll(long double force, double accel1, double accel2, double time,
-         double vel1, double vel2, long double dist1, long double dist2);
-//////////////////////////////////////////////////////////////////////////////// 
 
 int main(int argc, char **argv)  
 {
-   long double mass1, mass2, GRAV_CONST, x1, x2, y1, y2, z1, z2, dist, force;
+   long double mass1, mass2, GRAV_CONST, x1, x2, y1, y2, z1, z2, dist, force=0;
    long double dist1, dist2, dist_total1 = 0, dist_total2 = 0;
 
-   double accel1, accel2, vel_init1 = 0, vel_init2 = 0, vel_fin1, 
-          vel_fin2, time = 1000, time_to_hit = 0;
+   double accel1=0, accel2=0, vel_init1 = 0, vel_init2 = 0, vel_fin1=0, 
+          vel_fin2=0, time = 1000, time_to_hit = 0;
    string line;       
    
    if (argc < 2)     
@@ -65,10 +62,19 @@ int main(int argc, char **argv)
    cout.setf(ios::fixed);  
    cout.precision(5); 
 
+   //display the gravitational cont, and mass of two particles
    DisplayMassConst(mass1, mass2, GRAV_CONST);
-   DisplayCoordinates(x1, y1, z1, x2, y2, z2);
+   
+   //display all parameters bevore mooving
+   cout << time_to_hit << " " << force; 
 
+   DisplayCoordinates(x1, y1, z1, vel_init1, accel1);
+   DisplayCoordinates(x2, y2, z2, vel_init2, accel2);
+   cout << endl;
+
+   //calculates the distance of two particles before moovin
    dist = Distance(x1, y1, z1, x2, y2, z2);
+
    double total_distance;
 
    while(true)
@@ -84,6 +90,7 @@ int main(int argc, char **argv)
       dist1 = DistancePart(vel_fin1, vel_init1, time); 
       dist2 = DistancePart(vel_fin2, vel_init2, time);
       
+      //the distance they moved all together within time step
       total_distance = dist_total1 + dist_total2 + dist1 + dist2;
       
       if(total_distance > dist)
@@ -98,21 +105,23 @@ int main(int argc, char **argv)
             break;
       
       time_to_hit += time;
-      
 
+      //total distances each moves in time step
       dist_total1 += dist1;
       dist_total2 += dist2;
       
+      //initial velocities for the next time step
       vel_init1 = vel_fin1;
       vel_init2 = vel_fin2;
       
-      DisplayAll(force, accel1, accel2, time, vel_fin1, 
-                   vel_fin2, dist1, dist2);
+      cout << time_to_hit << "  " << force / pow(10.0, 20) << "e20  ";
+      DisplayCoordinates(dist_total1, y1, z1, vel_fin1, accel1); 
+      DisplayCoordinates(dist - dist_total2, y2, z2, vel_fin2, accel2); 
+
+      cout << endl;
    }
-   cout << "The time two body can hit each other is: " 
-        << time_to_hit << " sec.\n";
    
-   cout << " or " << ChangeSecToDays(time_to_hit) << " days.\n\n";    
+   //cout << ChangeSecToDays(time_to_hit) << " days.\n\n";    
    return 0;
 }
 long double GravForce(long double GRAV, long double mass1,   
@@ -146,28 +155,13 @@ long double DistancePart(double vel_fin, double vel_init, double time)
 void DisplayMassConst(long double mass1, long double mass2, 
          long double grav_const)
 {
-   cout << "Gravid. const. is: " << grav_const << " m^3 / (kg * s^2) \n"; 
-   cout << "1st body's mass: " << mass1 << " kg, 2nd body's mass: "
-        << mass2 << " kg\n\n";
+   cout <<  grav_const / pow(10.0, -11) << "e8   " << mass1 / pow(10.0, 24)
+        << "e24   " <<  mass2 / pow(10.0, 20) << "e20  " << endl; 
 }
-void DisplayCoordinates(long double x1, long double y1, long double z1,
-         long double x2, long double y2, long double z2)
+void DisplayCoordinates(long double x, long double y, long double z,
+	double vel, double accel)
+       
 {
-   cout << "Coordinates, 1st body: abscissa " << x1 
-        << ", ordinate " << y1 << ", and applicate " << z1 << endl << endl;
-   cout << "2nd body: abscissa " << x2 << ", ordinate " << y2 
-        << " and applicate " << z2 << endl << endl;
-}
-void DisplayAll(long double force, double accel1, double accel2, double time, 
-         double vel1, double vel2, long double dist1, long double dist2)
-{
-   cout << "The Gravidational Force between first and second bodies is:\n\t"
-        << force / pow(10.0, 20) << "e20 Newton" << endl <<endl;
-   cout << "The accelereations: 1st body: " << accel1 
-        << " 2nd body: " << accel2 << " m/s/s\n\n";  
-   cout << "The velocities: 1st body: " << vel1 << " 2nd body " 
-        << vel2 << " m/s\n\n";    
-   cout << "The distance each body moved after " << time << "sec. "
-        << " 1st body: " << dist1 << " 2nd body: " << dist2 << endl << endl;
+   cout <<  x << "  " << y << "  " << z << "  " << vel << "  " << accel << "  ";
 }
 
