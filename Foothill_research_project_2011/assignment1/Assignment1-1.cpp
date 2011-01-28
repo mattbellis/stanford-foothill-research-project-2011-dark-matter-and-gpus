@@ -28,10 +28,10 @@ void DisplayCoordinates(long double x, long double y, long double z, double vel,
 int main(int argc, char **argv)  
 {
    long double mass1, mass2, GRAV_CONST, x1, x2, y1, y2, z1, z2, dist, force=0;
-   long double dist1, dist2, dist_total1 = 0, dist_total2 = 0;
+   long double dist1, dist2, x_f1 = 0, x_f2 = 0;
 
-   double accel1=0, accel2=0, vel_init1 = 0, vel_init2 = 0, vel_fin1=0, 
-          vel_fin2=0, time = 1000, time_to_hit = 0;
+   double a1=0, a2=0, v_i1 = 0, v_i2 = 0, v_f1=0, 
+          v_f2=0, time = 1f0, time_to_hit = 0;
    string line;       
    
    if (argc < 2)     
@@ -66,14 +66,13 @@ int main(int argc, char **argv)
    //DisplayMassConst(mass1, mass2, GRAV_CONST);
    
    //display all parameters bevore mooving
-   // Commenting this out for the time being.
    //cout << time_to_hit << " " << force; 
 
-   DisplayCoordinates(x1, y1, z1, vel_init1, accel1);
-   DisplayCoordinates(x2, y2, z2, vel_init2, accel2);
+   //DisplayCoordinates(x1, y1, z1, vel_init1, accel1);
+   //DisplayCoordinates(x2, y2, z2, vel_init2, accel2);
    cout << endl;
 
-   //calculates the distance of two particles before moovin
+   //calculates the distance of two particles before moving
    dist = Distance(x1, y1, z1, x2, y2, z2);
 
    double total_distance;
@@ -81,18 +80,18 @@ int main(int argc, char **argv)
    while(true)
    {
       force = GravForce(GRAV_CONST, mass1, mass2, 
-                        dist - dist_total1 - dist_total2); 
-      accel1 = Acceleration(mass1, force);
-      accel2 = Acceleration(mass2, force);
+                       dist - x_f1 - x_f2); 
+      a1 = Acceleration(mass1, force);
+      a2 = Acceleration(mass2, force);
    
-      vel_fin1 = Velocity(accel1, vel_init1, time);
-      vel_fin2 = Velocity(accel2, vel_init2, time);
+      v_f1 = Velocity(a1, v_i1, time);
+      v_f2 = Velocity(a2, v_i2, time);
   
-      dist1 = DistancePart(vel_fin1, vel_init1, time); 
-      dist2 = DistancePart(vel_fin2, vel_init2, time);
+      dist1 = DistancePart(v_f1, v_i1, time); 
+      dist2 = DistancePart(v_f2, v_i2, time);
       
       //the distance they moved all together within time step
-      total_distance = dist_total1 + dist_total2 + dist1 + dist2;
+      total_distance = x_f1 + x_f2 + dist1 + dist2;
       
       if(total_distance > dist)
       {
@@ -106,24 +105,24 @@ int main(int argc, char **argv)
             break;
       
       time_to_hit += time;
-
+ 
       //total distances each moves in time step
-      dist_total1 += dist1;
-      dist_total2 += dist2;
+      x_f1 += dist1;
+      x_f2 += dist2;
       
       //initial velocities for the next time step
-      vel_init1 = vel_fin1;
-      vel_init2 = vel_fin2;
+      v_i1 = v_f1;
+      v_i2 = v_f2;
       
-      //cout << time_to_hit << "  " << force / pow(10.0, 20) << "e20  ";
-      //cout << time_to_hit << ", " << force << ",  ";
-      DisplayCoordinates(dist_total1, y1, z1, vel_fin1, accel1); 
-      DisplayCoordinates(dist - dist_total2, y2, z2, vel_fin2, accel2); 
+      cout << time_to_hit << "," << force / pow(10.0, 20) << "e20" << "," 
+		<< time_to_hit << ",";
+      DisplayCoordinates(x_f1, y1, z1, v_f1, a1); 
+      DisplayCoordinates(dist - x_f2, y2, z2, v_f2, a2); 
 
       cout << endl;
    }
-   
-   //cout << ChangeSecToDays(time_to_hit) << " days.\n\n";    
+   cout << "time in seconds" << time_to_hit<< endl;    
+   cout << ChangeSecToDays(time_to_hit) << " days.\n\n";    
    return 0;
 }
 long double GravForce(long double GRAV, long double mass1,   
