@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	long double dist1, dist2, x_f1 = 0, x_f2 = 0;
 
 	double a1=0, a2=0, v_i1 = 0, v_i2 = 0, v_f1=0, 
-	       v_f2=0, time = 100, time_to_hit = 0;
+	       v_f2=0, time = 1000, time_to_hit = 0;
 
 	// Arrays to hold the position, velocity and acceleration of a given
 	// particle at any time.
@@ -39,6 +39,18 @@ int main(int argc, char **argv)
 
 	double mass[NUM_PARTICLES];
 	double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
+
+	// Zero out the values
+	for (int i=0;i<NUM_PARTICLES;i++) 
+	{
+		mass[i] = 0.0;
+		for (int j=0;j<3;j++) 
+		{
+			pos[i][j] = 0.0;
+			vel[i][j] = 0.0;
+			acc[i][j] = 0.0;
+		}
+	}
 
 	string line;       
 
