@@ -200,5 +200,5 @@ void DisplayCoordinates(long double x, long double y, long double z,
         double vel, double accel)
 
 {
-    cout <<  x << "," << y << "," << z << "," << vel << "," << accel;
+    cout <<  x << "," << y << "," << z << "," << vel << "," << accel << ",";
 }
