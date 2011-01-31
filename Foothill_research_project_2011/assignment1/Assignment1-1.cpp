@@ -31,7 +31,7 @@ int main(int argc, char **argv)
    long double dist1, dist2, x_f1 = 0, x_f2 = 0;
 
    double a1=0, a2=0, v_i1 = 0, v_i2 = 0, v_f1=0, 
-          v_f2=0, time = 1f0, time_to_hit = 0;
+          v_f2=0, time = 1000, time_to_hit = 0;
    string line;       
    
    if (argc < 2)     
