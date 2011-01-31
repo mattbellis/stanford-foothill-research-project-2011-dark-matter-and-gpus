@@ -82,14 +82,6 @@ int main(int argc, char **argv)
 	cout.setf(ios::fixed);  
 	cout.precision(5); 
 
-	//display the gravitational cont, and mass of two particles
-	//DisplayMassConst(mass1, mass2, GRAV_CONST);
-
-	//display all parameters bevore mooving
-	//cout << time_to_hit << " " << force; 
-
-	//DisplayCoordinates(x1, y1, z1, vel_init1, accel1);
-	//DisplayCoordinates(x2, y2, z2, vel_init2, accel2);
 	cout << endl;
 
 	double total_distance;
@@ -98,7 +90,7 @@ int main(int argc, char **argv)
 	double vel_temp[3];
 	double pos_temp[3];
 
-	double acc_cutoff = 0.01;
+	double acc_cutoff = 0.1;
 
 	while(true)
 	{
@@ -174,7 +166,7 @@ double ChangeSecToDays(double time_sec)
 long double Distance(long double x1, long double y1, long double z1,
 		long double x2, long double y2, long double z2)  
 {
-	return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));  
+	return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1));  
 }
 long double DistancePart(double vel_fin, double vel_init, double time)
 {
