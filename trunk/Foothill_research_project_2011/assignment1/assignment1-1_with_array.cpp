@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
     cout << "Accumulated time, force, Accumulated time, separation,";
     cout << "x1,y1,z1,vx1,ax1,";
-    cout << "x2,y2,z2,vx2,ax2";
+    cout << "x2,y2,z2,vx2,ax2" << endl;
     while(true)
     {
         //calculates the distance of two particles before moving
