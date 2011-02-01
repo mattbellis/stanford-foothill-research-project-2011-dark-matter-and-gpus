@@ -87,11 +87,17 @@ def main():
     
     
     # The plot of the data
+    # Line 
+    my_plot = plot(pts[0], pts[1])
+    # Points
     my_plot = scatter(pts[0], pts[1])
     
     subplots[0].set_xlabel(xaxis_title)
     subplots[0].set_ylabel(yaxis_title)
     
+    infile_basename = filename.split('/')[-1].split('.')[0] 
+    output_file_name = "plot_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)
+    plt.savefig(output_file_name)
     plt.show()
 
 ################################################################################
