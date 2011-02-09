@@ -71,9 +71,9 @@ int main(int argc, char **argv)
       getline(infile, line);
       istringstream(line) >> GRAV_CONST; 
       getline(infile, line); 
-      istringstream(line) >> mass[0] >> pos[0][0] >> pos[0][1] >> pos[0][2];
+      istringstream(line) >> mass[0] >> pos[0][0] >> pos[0][1] >> pos[0][2] >> vel[0][0] >> vel[0][1];
       getline(infile, line); 
-      istringstream(line) >> mass[1] >> pos[1][0] >> pos[1][1] >> pos[1][2];
+      istringstream(line) >> mass[1] >> pos[1][0] >> pos[1][1] >> pos[1][2] >> vel[1][0] >> vel[1][1];
    } 
    else
    {
