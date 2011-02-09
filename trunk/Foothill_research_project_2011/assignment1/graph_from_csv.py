@@ -25,10 +25,14 @@ def main():
             help="Column in file to use as x-axis values.")
     parser.add_option("-y", "--y-axis",  dest="y_index", default=1, 
             help="Column in file to use as y-axis values.")
+    parser.add_option("-n", "--plot_every_nth_point",  dest="plot_every_nth_point",
+            default=1, 
+            help="If you're plotting a really big file, then only plot every nth point. [default=1]")
 
     # Parse the options
     (options, args) = parser.parse_args()
 
+    plot_every_nth_point = int(options.plot_every_nth_point)
 
     ################################################################################
     ################################################################################
@@ -59,6 +63,7 @@ def main():
     else:
         filename = args[0]
 
+
     infile = csv.reader(open(filename, 'rb'), delimiter=',', quotechar='#')
     ############################################################################
     
@@ -72,6 +77,8 @@ def main():
     i = 0
     for row in infile:
         #print row
+        if i%10000==0:
+            print i
 
         # Assume that there is header information that we will use for the
         # axis labels
@@ -79,7 +86,7 @@ def main():
             xaxis_title = row[x_index]
             yaxis_title = row[y_index]
         # Otherwise, it is data
-        elif len(row)>y_index and i>0:
+        elif len(row)>y_index and i>0 and i%plot_every_nth_point==0:
             pts[0].append(float(row[x_index]))
             pts[1].append(float(row[y_index]))
 
