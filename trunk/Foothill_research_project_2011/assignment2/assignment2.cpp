@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     // Arrays to hold the position, velocity and acceleration of a given
     // particle at any time.
 
-   long double mass[NUM_PARTICLES], force_comp[3], force_total[3];
+   long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
    double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
 
    // Zero out the values
@@ -47,6 +47,7 @@ int main(int argc, char **argv)
       for (int j=0; j<3; j++) 
       {
          force_comp[j] = 0.0;
+         force_total[i][j] = 0.0;
          pos[i][j] = 0.0;
          vel[i][j] = 0.0;
          acc[i][j] = 0.0;
@@ -99,35 +100,31 @@ int main(int argc, char **argv)
    cout << "x2,y2,z2,vx2,ax2" << endl;
    while(true)
    {
-      //calculates the distance of two particles before moving
-           
       for(int i=0; i<NUM_PARTICLES; i++)
       {
-         for(int t=0; t<3; t++)
-            force_total[t] = 0.0;
          for(int j=0; j<NUM_PARTICLES; j++)
-	      {
-	      if(i != j)
+	 {
+	 if(i != j)
          {
             dist = Distance(pos[i][0], pos[i][1], pos[i][2], 
                pos[j][0], pos[j][1], pos[j][2]);
-	         force = GravForce(GRAV_CONST, mass[i], mass[j], dist); 
+	    force = GravForce(GRAV_CONST, mass[i], mass[j], dist); 
            
                x = pos[j][0] - pos[i][0];
                y = pos[j][1] - pos[i][1];
                z = pos[j][2] - pos[i][2];
-               
-	         if(x != 0)
+            
+            if(x != 0)
                unit_vector_x = x /abs(x);
             else
                unit_vector_x = 1;
-	         if(y != 0)
+            if(y != 0)
                unit_vector_y = y /abs(y);
             else
                unit_vector_y = 1;
             if(z != 0)		         
-		         unit_vector_z = z /abs(z);
- 	         else
+               unit_vector_z = z /abs(z);
+ 	    else
                unit_vector_z =1;
 
                k = sqrt(dist * dist - z * z);
@@ -141,18 +138,37 @@ int main(int argc, char **argv)
                force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
 	       force_comp[2] = force * cos_theta * unit_vector_z;
 	            
-               for (int k=0; k<3; k++) 
-               {
-                  force_total[k] += force_comp[k];
-                  acc[i][k] = Acceleration(mass[i], force_total[k]);
-                  vel_temp[k] = vel[i][k];
-                  vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
-                  
-                  pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
-               }
+               for(int m=0; m < 3; m++)
+                  force_total[i][m]+=force_comp[m];
+
+             }
+           }
+       }
+/*              for (int k=0; k<3; k++) 
+#              {
+#                 force_total[k] += force_comp[k];
+#                 acc[i][k] = Acceleration(mass[i], force_total[k]);
+
+#                 vel_temp[k] = vel[i][k];
+#                 vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
+#                 
+#                 pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
+#              }     */
+          
+
+         for (int i=0; i<NUM_PARTICLES; i++) 
+         {
+            for(int k=0; k<3; k++)
+            {
+               acc[i][k] = Acceleration(mass[i], force_total[i][k]);
+               vel_temp[k] = vel[i][k];
+               vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
+                 
+               pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
+               force_total[i][k] = 0.0;
             }
-         }	
-      }
+         }
+      
       if(acc[0][0] > acc_cutoff)
       {
          acc_cutoff *= 10;
