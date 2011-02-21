@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 
+################################################################################
+# This program will generate intitial conditions for an n-body simulation.
+#
+# It will randomly generate the mass, initial position and intitial velocity
+# for the particles, using an (x,y,z) coordinate system.
+# 
+# The user can specify whether or not these values are generated from a flat
+# distribution or a random distribution.
+#
+################################################################################
+
+
 
 import sys
 from math import *
