@@ -28,7 +28,8 @@ void DisplayCoordinates(long double x, long double y, long double z, double vel,
 
 int main(int argc, char **argv)  
 {
-    long double GRAV_CONST, dist, force=0;
+    long double GRAV_CONST, force=0;
+    float dist[3][3];
     long double x = 0, y= 0,z = 0; 
 
     double time = 1000, time_to_hit = 0; 
@@ -106,9 +107,9 @@ int main(int argc, char **argv)
             {
                 if(i != j)
                 {
-                    dist = Distance(pos[i][0], pos[i][1], pos[i][2], 
+                    dist[i][j] = Distance(pos[i][0], pos[i][1], pos[i][2], 
                             pos[j][0], pos[j][1], pos[j][2]);
-                    force = GravForce(GRAV_CONST, mass[i], mass[j], dist); 
+                    force = GravForce(GRAV_CONST, mass[i], mass[j], dist[i][j]); 
 
                     x = pos[j][0] - pos[i][0];
                     y = pos[j][1] - pos[i][1];
@@ -127,12 +128,12 @@ int main(int argc, char **argv)
                     else
                         unit_vector_z =1;
 
-                    k = sqrt(dist * dist - z * z);
+                    k = sqrt(dist[i][j] * dist[i][j] - z * z);
 
                     cos_phi = abs(x) / k;
                     sin_phi = abs(y) / k;
-                    cos_theta = abs(z) / dist; 
-                    sin_theta = k / dist;
+                    cos_theta = abs(z) / dist[i][j]; 
+                    sin_theta = k / dist[i][j];
 
                     force_comp[0] = force * sin_theta * cos_phi * unit_vector_x;
                     force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
@@ -173,26 +174,33 @@ int main(int argc, char **argv)
         // Need to check to see if acceleration is too big!
         ////////////////////////////////////////////////////////////////////////
         bool acceleration_is_too_big = false;
+        bool too_close = false;
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
             for (int j=0; j<3; j++) 
             {
                 if(abs(acc[i][j]) > acc_cutoff && acceleration_is_too_big==false)
                 {
-                    bool acceleration_is_too_big = true;
-                    acc_cutoff *= 2;
-                    time = time / 2;
-                    if(time < 1)
-                        break;
-                    continue;
+                    acceleration_is_too_big = true;
+                    if(time > 1)
+                    {
+                        acc_cutoff *= 2;
+                        time = time / 2;
+                    }
                 }
                 else
                 {
-                    if(dist < 1e7)
-                        break;
+                    if (i!=j && dist[i][j] < 1e4)
+                    {
+                        cerr << dist[i][j] << endl;
+                        too_close = true;
+                    }
                 }
             }
         }
+
+        if (too_close)
+            exit(0);
         ////////////////////////////////////////////////////////////////////////
 
         time_to_hit += time;
