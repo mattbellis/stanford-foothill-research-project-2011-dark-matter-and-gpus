@@ -10,7 +10,7 @@
 using namespace std;    
 
 double const PI = 3.14;  
-static int const NUM_PARTICLES = 3;
+static int const MAX_PARTICLES = 1000;
 
 //methods definitions
 long double GravForce(long double grav, long double mass1,
@@ -28,34 +28,9 @@ void DisplayCoordinates(long double x, long double y, long double z, double vel,
 
 int main(int argc, char **argv)  
 {
-    long double GRAV_CONST, force=0;
-    float dist[3][3];
-    long double x = 0, y= 0,z = 0; 
-
-    double time = 1000, time_to_hit = 0; 
-
-    // Arrays to hold the position, velocity and acceleration of a given
-    // particle at any time.
-
-    long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
-    double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
-
-    // Zero out the values
-    for (int i=0; i<NUM_PARTICLES; i++) 
-    {
-        mass[i] = 0.0;
-
-        for (int j=0; j<3; j++) 
-        {
-            force_comp[j] = 0.0;
-            force_total[i][j] = 0.0;
-            pos[i][j] = 0.0;
-            vel[i][j] = 0.0;
-            acc[i][j] = 0.0;
-        }
-    }
-
-    string line;       
+    float GRAV_CONST;
+    long double x = 0, y= 0,z = 0, force=0; 
+    int NUM_PARTICLES;
 
     if (argc < 2)     
     {
@@ -68,21 +43,39 @@ int main(int argc, char **argv)
 
     ifstream infile(argv[1]); 
 
+    infile >> GRAV_CONST;
+    infile >> NUM_PARTICLES;
+   
+    long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
+    double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
+
     if(infile.good()) 
     {
-        getline(infile, line);
-        istringstream(line) >> GRAV_CONST; 
-        getline(infile, line); 
-        istringstream(line) >> mass[0] >> pos[0][0] >> pos[0][1] >> pos[0][2] >> vel[0][0] >> vel[0][1];
-        getline(infile, line); 
-        istringstream(line) >> mass[1] >> pos[1][0] >> pos[1][1] >> pos[1][2] >> vel[1][0] >> vel[1][1];
-        getline(infile, line); 
-        istringstream(line) >> mass[2] >> pos[2][0] >> pos[2][1] >> pos[2][2] >> vel[2][0] >> vel[2][1];
+       for(int i=0; i<NUM_PARTICLES; i++)
+       {
+           infile >> mass[i] >> pos[i][0] >> pos[i][1] >> pos[i][2] >> vel[i][0] >> vel [i][1] >> vel[i][2];
+       }
+
     } 
     else
     {
-        cerr << "Couldn't open the file for input." << endl;
-        exit(1);
+       cerr << "Couldn't open the file for input." << endl;
+       exit(1);
+    }
+    long double dist[NUM_PARTICLES][NUM_PARTICLES];
+
+    double time = 1000, time_to_hit = 0; 
+
+    // Zero out the values
+    for (int i=0; i<NUM_PARTICLES; i++) 
+    {
+        for (int j=0; j<3; j++) 
+        {
+            force_comp[j] = 0.0;
+            force_total[i][j] = 0.0;
+            acc[i][j] = 0.0;
+            dist[i][j] = 0.0;
+        }
     }
 
     cout.setf(ios::fixed);  
@@ -145,17 +138,6 @@ int main(int argc, char **argv)
                 }
             }
         }
-        /*              for (int k=0; k<3; k++) 
-#              {
-#                 force_total[k] += force_comp[k];
-#                 acc[i][k] = Acceleration(mass[i], force_total[k]);
-
-#                 vel_temp[k] = vel[i][k];
-#                 vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
-#                 
-#                 pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
-#              }     */
-
 
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
@@ -182,11 +164,11 @@ int main(int argc, char **argv)
                 if(abs(acc[i][j]) > acc_cutoff && acceleration_is_too_big==false)
                 {
                     acceleration_is_too_big = true;
-                    if(time > 1)
-                    {
-                        acc_cutoff *= 2;
-                        time = time / 2;
-                    }
+                    acc_cutoff *= 2;
+                    time = time / 2;
+                    if(time < 1)
+                        break;
+                    continue;
                 }
                 else
                 {
@@ -207,11 +189,11 @@ int main(int argc, char **argv)
 
         cout << time_to_hit << "," << force / pow(10.0, 20) << "e20" << "," 
             << time_to_hit << ",";
-        cout << dist << ",";
-        for (int i=0;i<NUM_PARTICLES;i++) 
-        {
-            DisplayCoordinates(pos[i][0], pos[i][1], pos[i][2], vel[i][0], acc[i][0]); 
-        }
+      cout << dist << ",";
+      for (int i=0;i<NUM_PARTICLES;i++) 
+      {
+         DisplayCoordinates(pos[i][0], pos[i][1], pos[i][2], vel[i][0], acc[i][0]); 
+      }
 
         cout << endl;
     }
