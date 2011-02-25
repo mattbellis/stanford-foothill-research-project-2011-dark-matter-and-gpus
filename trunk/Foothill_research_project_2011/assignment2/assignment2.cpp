@@ -80,8 +80,8 @@ int main(int argc, char **argv)
         }
     }
 
-    cout.setf(ios::fixed);  
-    cout.precision(5); 
+    cout.setf(ios_base::scientific,ios::fixed);  
+    cout.precision(4); 
 
     double total_distance;
     double original_distance;
@@ -162,9 +162,9 @@ int main(int argc, char **argv)
                     //force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
                     //force_comp[2] = force * cos_theta * unit_vector_z;
 
-                    force_comp[0] = force * x;
-                    force_comp[1] = force * y;
-                    force_comp[2] = force * z;
+                    force_comp[0] = force_part * x;
+                    force_comp[1] = force_part * y;
+                    force_comp[2] = force_part * z;
 
                     for(int m=0; m < 3; m++)
                         force_total[i][m]+=force_comp[m];
