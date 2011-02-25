@@ -118,16 +118,6 @@ void setup()
     //lines = loadStrings("output.csv");
     //nlines = lines.length;
 
-    //String[] vals = split(lines[0], ' ');
-    nparticles = 10;
-    println("nparticles: " + nparticles);
-
-    nlines_in_time_slice = 1;
-    for (int n=0;n<nparticles;n++)
-    {
-        radii[n] = 3;
-    }
-
     // Path
     String path = dataPath("");
     println("Listing all filenames in a directory: ");
@@ -275,12 +265,19 @@ void draw_time_slice()
 
                     //println("here: " + vals[0]);
                     float radius = float(radii[i]);
-                    float x = xcenter + float(vals[4+i*5])*xnorm;
-                    float y = ycenter - float(vals[5+i*5])*ynorm;
-                    float z = zcenter - float(vals[6+i*5])*znorm;
+                    float x = xcenter + float(vals[1+i*3])*xnorm;
+                    float y = ycenter - float(vals[2+i*3])*ynorm;
+                    float z = zcenter - float(vals[3+i*3])*znorm;
                     //float z = float(vals[6+i*5])*depth + 100.0;
 
                     //println("xyz: " + x + " " + y + " " + z);
+
+                    float zcol = 255*(z + depth)/(2.0*depth);
+                    int rcol = int(zcol);
+                    int gcol = int(255* sin(3.14159*zcol/255.0));
+                    int bcol = int(255-zcol);
+                    //println(zcol);
+                    fill(rcol,gcol,bcol); 
 
                     pushMatrix();
                     translate(x, y, -z);
@@ -411,7 +408,7 @@ void controlEvent(ControlEvent theEvent) {
         }
         else if (theEvent.group().value()==2)
         {
-            process_every_nslices = 100;
+            process_every_nslices = 500;
         }
     }
     if (theEvent.name() == "myList-p2")
@@ -421,6 +418,28 @@ void controlEvent(ControlEvent theEvent) {
         reader = createReader(infile);
         process_file = true;
         dt = 0;
+
+        //String[] vals = split(lines[0], ' ');
+        String line = "DEFAULTLINE";
+        try{
+            line = reader.readLine();
+            //println(line);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        nparticles = int(line);
+        println("nparticles: " + nparticles);
+        dt++;
+
+        nlines_in_time_slice = 1;
+        for (int n=0;n<nparticles;n++)
+        {
+            radii[n] = 3;
+        }
+
     }
 }
 
