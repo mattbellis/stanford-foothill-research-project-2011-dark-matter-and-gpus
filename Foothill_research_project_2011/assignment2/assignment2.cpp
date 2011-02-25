@@ -29,7 +29,7 @@ void DisplayCoordinates(long double x, long double y, long double z, double vel,
 int main(int argc, char **argv)  
 {
     float GRAV_CONST;
-    long double x = 0, y= 0,z = 0, force=0; 
+    long double x = 0, y= 0,z = 0, force=0, force_part=0; 
     int NUM_PARTICLES;
 
     if (argc < 2)     
@@ -45,26 +45,28 @@ int main(int argc, char **argv)
 
     infile >> GRAV_CONST;
     infile >> NUM_PARTICLES;
-   
+
     long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
     double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
 
     if(infile.good()) 
     {
-       for(int i=0; i<NUM_PARTICLES; i++)
-       {
-           infile >> mass[i] >> pos[i][0] >> pos[i][1] >> pos[i][2] >> vel[i][0] >> vel [i][1] >> vel[i][2];
-       }
+        for(int i=0; i<NUM_PARTICLES; i++)
+        {
+            infile >> mass[i] >> pos[i][0] >> pos[i][1] >> pos[i][2] >> vel[i][0] >> vel[i][1] >> vel[i][2];
+        }
 
     } 
     else
     {
-       cerr << "Couldn't open the file for input." << endl;
-       exit(1);
+        cerr << "Couldn't open the file for input." << endl;
+        exit(1);
     }
     long double dist[NUM_PARTICLES][NUM_PARTICLES];
 
     double time = 1000, time_to_hit = 0; 
+
+    int num_time_steps = 0;
 
     // Zero out the values
     for (int i=0; i<NUM_PARTICLES; i++) 
@@ -86,51 +88,83 @@ int main(int argc, char **argv)
     double cos_phi, sin_phi, cos_theta, sin_theta;
     double vel_temp[3];
     double pos_temp[3];
+    double absx,absy,absz;
 
     double acc_cutoff = 0.01, unit_vector_x=0, unit_vector_y=0, unit_vector_z=0;
     double k;
-    cout << "Accumulated time, force, Accumulated time, separation,";
-    cout << "x1,y1,z1,vx1,ax1,";
-    cout << "x2,y2,z2,vx2,ax2" << endl;
+
+    cout << NUM_PARTICLES << endl;
+
+    double local_dist = 0.0;
+    double local_dist_sq = 0.0;
+    double local_dist_cubed = 0.0;
+    double Gm1m2 = 0.0;
+
     while(true)
     {
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Write out how many steps we've taken
+        ///////////////////////////////////////////////////////////////////////
+        if (num_time_steps%10000==0)
+        {
+            cerr << num_time_steps << endl;
+        }
+        ///////////////////////////////////////////////////////////////////////
+            
         for(int i=0; i<NUM_PARTICLES; i++)
         {
             for(int j=0; j<NUM_PARTICLES; j++)
             {
                 if(i != j)
                 {
+
                     dist[i][j] = Distance(pos[i][0], pos[i][1], pos[i][2], 
                             pos[j][0], pos[j][1], pos[j][2]);
-                    force = GravForce(GRAV_CONST, mass[i], mass[j], dist[i][j]); 
+
+                    local_dist = dist[i][j];
+                    local_dist_cubed = local_dist * local_dist * local_dist;
+
+                    //force = GravForce(GRAV_CONST, mass[i], mass[j], local_dist); 
+                    Gm1m2 = GRAV_CONST* mass[i]* mass[j];
+                    force_part = Gm1m2/local_dist_cubed;
 
                     x = pos[j][0] - pos[i][0];
                     y = pos[j][1] - pos[i][1];
                     z = pos[j][2] - pos[i][2];
+                    //absx = abs(x);
+                    //absy = abs(y);
+                    //absz = abs(z);
 
+                    /*
                     if(x != 0)
-                        unit_vector_x = x /abs(x);
+                        unit_vector_x = x /absx;
                     else
                         unit_vector_x = 1;
                     if(y != 0)
-                        unit_vector_y = y /abs(y);
+                        unit_vector_y = y /absy;
                     else
                         unit_vector_y = 1;
                     if(z != 0)		         
-                        unit_vector_z = z /abs(z);
+                        unit_vector_z = z /absz;
                     else
                         unit_vector_z =1;
 
-                    k = sqrt(dist[i][j] * dist[i][j] - z * z);
+                    k = sqrt(local_dist_sq - z * z);
 
-                    cos_phi = abs(x) / k;
-                    sin_phi = abs(y) / k;
-                    cos_theta = abs(z) / dist[i][j]; 
-                    sin_theta = k / dist[i][j];
+                    cos_phi = absx / k;
+                    sin_phi = absy / k;
+                    cos_theta = absz / local_dist; 
+                    sin_theta = k / local_dist;
+                    */
 
-                    force_comp[0] = force * sin_theta * cos_phi * unit_vector_x;
-                    force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
-                    force_comp[2] = force * cos_theta * unit_vector_z;
+                    //force_comp[0] = force * sin_theta * cos_phi * unit_vector_x;
+                    //force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
+                    //force_comp[2] = force * cos_theta * unit_vector_z;
+
+                    force_comp[0] = force * x;
+                    force_comp[1] = force * y;
+                    force_comp[2] = force * z;
 
                     for(int m=0; m < 3; m++)
                         force_total[i][m]+=force_comp[m];
@@ -163,11 +197,11 @@ int main(int argc, char **argv)
             {
                 if(abs(acc[i][j]) > acc_cutoff && acceleration_is_too_big==false)
                 {
+                    if(time < 10)
+                        break;
                     acceleration_is_too_big = true;
                     acc_cutoff *= 2;
                     time = time / 2;
-                    if(time < 1)
-                        break;
                     continue;
                 }
                 else
@@ -187,15 +221,15 @@ int main(int argc, char **argv)
 
         time_to_hit += time;
 
-        cout << time_to_hit << "," << force / pow(10.0, 20) << "e20" << "," 
-            << time_to_hit << ",";
-      cout << dist << ",";
-      for (int i=0;i<NUM_PARTICLES;i++) 
-      {
-         DisplayCoordinates(pos[i][0], pos[i][1], pos[i][2], vel[i][0], acc[i][0]); 
-      }
+        cout << time_to_hit << ",";
+            
+        for (int i=0;i<NUM_PARTICLES;i++) 
+        {
+            cout << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
+        }
 
         cout << endl;
+        num_time_steps++;
     }
     cerr << "time in seconds: " << time_to_hit<< endl;    
     cerr << ChangeSecToDays(time_to_hit) << " days.\n\n";    
