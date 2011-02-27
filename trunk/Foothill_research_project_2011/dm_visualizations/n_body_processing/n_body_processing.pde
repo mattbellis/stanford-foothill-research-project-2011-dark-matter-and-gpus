@@ -9,6 +9,8 @@ DropdownList p1, p2;
 ///////////////////////////////////////////////////////////////////////////////
 import javax.swing.JFileChooser;
 ///////////////////////////////////////////////////////////////////////////////
+import processing.opengl.*;
+///////////////////////////////////////////////////////////////////////////////
 
 int screen_width = 800;
 int screen_height = 800;
@@ -73,6 +75,10 @@ int cnt = 0;
 
 void setup() 
 {
+
+    // For better controlP5 fonts
+    hint(ENABLE_NATIVE_FONTS);
+
     ///////////////////////////////////////////////////////////////////////////
     // Read in the config file to set the ranges on the scale of the positions
     // vectors.
@@ -110,6 +116,7 @@ void setup()
     ///////////////////////////////////////////////////////////////////////////
 
     size(screen_width,screen_height,P3D);
+    //size(screen_width,screen_height,OPENGL);
     frameRate(30);
     //noLoop();
     //smooth();
@@ -142,6 +149,7 @@ void setup()
     customize(p1);
     p2 = controlP5.addDropdownList("myList-p2",220,50,120,120);
     customize_filelist(p2);
+
 
     //println(dataPath("")); 
     //String path = "./";
@@ -198,7 +206,13 @@ void draw() {
     //dt = 1;
     //}
 
+    // Change height of the camera with mouseY
+    //camera(xcenter, ycenter, (screen_height/2.0) / tan(PI*60.0 / 360.0), // eyeX, eyeY, eyeZ
+    //xcenter, ycenter, 600.0, // centerX, centerY, centerZ
+    //0.0, 1.0, 0.0); // upX, upY, upZ
+
     controlP5.draw();
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -325,7 +339,7 @@ void customize_filelist(DropdownList ddl) {
     ddl.setItemHeight(15);
     ddl.setBarHeight(15);
     //ddl.setHeight(300);
-    //ddl.setWidth(100);
+    ddl.setWidth(200);
     ddl.captionLabel().set("Choose a file");
     ddl.captionLabel().style().marginTop = 3;
     //ddl.captionLabel().style().marginLeft = 6;
@@ -437,7 +451,7 @@ void controlEvent(ControlEvent theEvent) {
         nlines_in_time_slice = 1;
         for (int n=0;n<nparticles;n++)
         {
-            radii[n] = 3;
+            radii[n] = 16;
         }
 
     }
