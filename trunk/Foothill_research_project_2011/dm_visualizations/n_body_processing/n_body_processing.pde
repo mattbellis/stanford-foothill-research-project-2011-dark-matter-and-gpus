@@ -418,7 +418,7 @@ void controlEvent(ControlEvent theEvent) {
         }
         else if (theEvent.group().value()==1)
         {
-            process_every_nslices = 10;
+            process_every_nslices = 100;
         }
         else if (theEvent.group().value()==2)
         {
