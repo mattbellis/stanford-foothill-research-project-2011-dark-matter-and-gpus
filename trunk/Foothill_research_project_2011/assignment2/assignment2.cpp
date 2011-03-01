@@ -4,6 +4,8 @@
 #include<sstream>
 #include<cstdlib>
 
+#include<string>
+
 #define DAY_HOUR 24
 #define HOUR_SEC 3600    
 
@@ -45,17 +47,27 @@ int main(int argc, char **argv)
     
     ofstream outfile(argv[2]);
     
+    ////////////////////////////////////////////////////////////////////////////
+    // Read in the config file
+    ////////////////////////////////////////////////////////////////////////////
     infile >> GRAV_CONST;
     infile >> NUM_PARTICLES;
 
     long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
     double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
 
+    string dummy;
     if(infile.good()) 
     {
         for(int i=0; i<NUM_PARTICLES; i++)
         {
-            infile >> mass[i] >> pos[i][0] >> pos[i][1] >> pos[i][2] >> vel[i][0] >> vel[i][1] >> vel[i][2];
+            infile >> mass[i] >> dummy; 
+            infile >> pos[i][0] >> dummy;
+            infile >> pos[i][1] >> dummy;
+            infile >> pos[i][2] >> dummy;
+            infile >> vel[i][0] >> dummy;
+            infile >> vel[i][1] >> dummy;
+            infile >> vel[i][2] >> dummy;
         }
 
     } 
@@ -64,6 +76,8 @@ int main(int argc, char **argv)
         cerr << "Couldn't open the file for input." << endl;
         exit(1);
     }
+    ////////////////////////////////////////////////////////////////////////////
+
     long double dist[NUM_PARTICLES][NUM_PARTICLES];
 
     double time = 1000, time_to_hit = 0; 
@@ -110,7 +124,7 @@ int main(int argc, char **argv)
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
-        if(num_time_steps == 250000)
+        if(num_time_steps > 1e7)
            exit(1);
         if (num_time_steps%10000==0)
         {
@@ -255,8 +269,9 @@ int main(int argc, char **argv)
            }
 
            cout << endl;
-           num_time_steps++;
        }
+
+       num_time_steps++;
        max_force = 0.0;
        max_accel = 0.0; 
        max_vel = 0.0;
