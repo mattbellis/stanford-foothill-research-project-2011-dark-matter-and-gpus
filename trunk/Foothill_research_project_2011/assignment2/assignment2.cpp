@@ -32,17 +32,19 @@ int main(int argc, char **argv)
     long double x = 0, y= 0,z = 0, force=0, force_part=0; 
     int NUM_PARTICLES;
 
-    if (argc < 2)     
+    if (argc < 3)     
     {
         cerr << endl;
-        cerr << "Must pass in config file on command line!" << endl;
-        cerr << "Usage: " << argv[0] << " <config file> " << endl;
+        cerr << "Must pass in config and diagnostic files on command line!" << endl;
+        cerr << "Usage: " << argv[0] << " <config file> <diagnostic file> " << endl;
         cerr << endl; 
         exit(1); 
     }
 
     ifstream infile(argv[1]); 
-
+    
+    ofstream outfile(argv[2]);
+    
     infile >> GRAV_CONST;
     infile >> NUM_PARTICLES;
 
@@ -92,7 +94,9 @@ int main(int argc, char **argv)
 
     double acc_cutoff = 0.01, unit_vector_x=0, unit_vector_y=0, unit_vector_z=0;
     double k;
-
+    double max_force = 0.0, max_vel = 0.0, max_accel=0.0;
+    double vel_magn =0.0, accel_magn =0.0;
+    
     cout << NUM_PARTICLES << endl;
 
     double local_dist = 0.0;
@@ -106,11 +110,13 @@ int main(int argc, char **argv)
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
+        if(num_time_steps == 250000)
+           exit(1);
         if (num_time_steps%10000==0)
         {
             cerr << num_time_steps << endl;
         }
-        ///////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////
             
         for(int i=0; i<NUM_PARTICLES; i++)
         {
@@ -123,12 +129,16 @@ int main(int argc, char **argv)
                             pos[j][0], pos[j][1], pos[j][2]);
 
                     local_dist = dist[i][j];
+                    local_dist_sq = local_dist * local_dist;
                     local_dist_cubed = local_dist * local_dist * local_dist;
 
                     //force = GravForce(GRAV_CONST, mass[i], mass[j], local_dist); 
                     Gm1m2 = GRAV_CONST* mass[i]* mass[j];
                     force_part = Gm1m2/local_dist_cubed;
-
+                    
+                    force = Gm1m2 / local_dist_sq;
+                    if(force > max_force)
+                       max_force = force;
                     x = pos[j][0] - pos[i][0];
                     y = pos[j][1] - pos[i][1];
                     z = pos[j][2] - pos[i][2];
@@ -173,6 +183,8 @@ int main(int argc, char **argv)
             }
         }
 
+        double accel_magn_part=0.0, vel_magn_part=0.0;
+
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
             for(int k=0; k<3; k++)
@@ -183,7 +195,18 @@ int main(int argc, char **argv)
 
                 pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
                 force_total[i][k] = 0.0;
+
+                vel_magn_part += vel[i][k] * vel[i][k];
+                accel_magn_part += acc[i][k] * acc[i][k];
             }
+            vel_magn = sqrt(vel_magn_part);
+            accel_magn = sqrt(accel_magn_part);
+            if(vel_magn > max_vel)
+               max_vel = vel_magn;
+            if(accel_magn > max_accel)
+               max_accel = accel_magn;
+            vel_magn_part = 0.0;
+            accel_magn_part = 0.0;
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -221,16 +244,24 @@ int main(int argc, char **argv)
 
         time_to_hit += time;
 
-        cout << time_to_hit << ",";
-            
-        for (int i=0;i<NUM_PARTICLES;i++) 
+        if(int(time_to_hit) % 1000 == 0)
         {
-            cout << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
-        }
+           cout << time_to_hit << ",";
+           outfile << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
+                   << max_accel << ", " << endl; 
+           for (int i=0;i<NUM_PARTICLES;i++) 
+           {
+              cout << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
+           }
 
-        cout << endl;
-        num_time_steps++;
+           cout << endl;
+           num_time_steps++;
+       }
+       max_force = 0.0;
+       max_accel = 0.0; 
+       max_vel = 0.0;
     }
+    outfile.close();
     cerr << "time in seconds: " << time_to_hit<< endl;    
     cerr << ChangeSecToDays(time_to_hit) << " days.\n\n";    
     return 0;
