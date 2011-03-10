@@ -125,7 +125,7 @@ int main(int argc, char **argv)
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
-        if(num_time_steps > 500000)
+        if(num_time_steps > 1000000)
            exit(1);
         if (num_time_steps%10000==0)
         {
