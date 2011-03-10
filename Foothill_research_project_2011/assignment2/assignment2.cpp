@@ -116,15 +116,16 @@ int main(int argc, char **argv)
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0;
+    double Gm1m2 = 0.0, eps = 1.2e17;
 
+    outfile << "Time," << "Force," << "Velocity," << "Acceleration\n";
     while(true)
     {
         
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
-        if(num_time_steps > 1e7)
+        if(num_time_steps > 500000)
            exit(1);
         if (num_time_steps%10000==0)
         {
@@ -144,7 +145,7 @@ int main(int argc, char **argv)
 
                     local_dist = dist[i][j];
                     local_dist_sq = local_dist * local_dist;
-                    local_dist_cubed = local_dist * local_dist * local_dist;
+                    local_dist_cubed = local_dist * (local_dist * local_dist + eps);
 
                     //force = GravForce(GRAV_CONST, mass[i], mass[j], local_dist); 
                     Gm1m2 = GRAV_CONST* mass[i]* mass[j];
@@ -257,7 +258,7 @@ int main(int argc, char **argv)
         ////////////////////////////////////////////////////////////////////////
 
         time_to_hit += time;
-
+//       outfile << "Time\tForce\tvelocity\tAcceleration\n";
         if(int(time_to_hit) % 1000 == 0)
         {
            cout << time_to_hit << ",";
