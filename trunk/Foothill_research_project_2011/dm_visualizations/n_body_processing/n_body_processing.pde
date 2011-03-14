@@ -11,6 +11,9 @@ import javax.swing.JFileChooser;
 ///////////////////////////////////////////////////////////////////////////////
 import processing.opengl.*;
 ///////////////////////////////////////////////////////////////////////////////
+// PeasyCam - a good camera.
+import peasy.*;
+///////////////////////////////////////////////////////////////////////////////
 
 int screen_width = 800;
 int screen_height = 800;
@@ -47,6 +50,10 @@ BufferedReader reader;
 //BufferedReader reader = createReader("/home/bellis/sketchbook/display_dark_matter_animation_csv_files_input/data/output.csv");
 
 JFileChooser chooser = new JFileChooser();
+
+PeasyCam cam;
+PMatrix3D currCameraMatrix;
+PGraphics3D g3; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Grabbed this from http://wiki.processing.org/w/BufferedReader
@@ -115,7 +122,14 @@ void setup()
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
-    size(screen_width,screen_height,P3D);
+    //size(screen_width,screen_height,P3D);
+    size(screen_width,screen_height,OPENGL);
+    g3 = (PGraphics3D)g;
+    cam = new PeasyCam(this, xcenter, ycenter, -depth, 2.0*depth);
+    //cam = new PeasyCam(this, 100);
+    cam.setMinimumDistance(50);
+    cam.setMaximumDistance(4000);
+
     //size(screen_width,screen_height,OPENGL);
     frameRate(30);
     //noLoop();
@@ -150,11 +164,7 @@ void setup()
     p2 = controlP5.addDropdownList("myList-p2",220,50,120,120);
     customize_filelist(p2);
 
-
-    //println(dataPath("")); 
-    //String path = "./";
-    //File f = new File(path);
-    //if (f.exists()) print("I found the file."); 
+    controlP5.setAutoDraw(false);
 
 }
 
@@ -165,33 +175,8 @@ void draw() {
 
     int mCount = 0;
 
-    /*
-       try {
-       String line;
-       while ((line = reader.readLine()) != null) {
-    // do something with each line:
-    String[] words = split(line, '\t');
-    if (words[1].equals("2000")) {
-    mCount++;
-    }
-    }
-    }
-    catch (Exception e) {
-    e.printStackTrace(); 
-    }
-     */
-
-
     background(0);
     lights();
-
-    // Change height of the camera with mouseY
-    //camera(mouseX, mouseY, 500.0, // eyeX, eyeY, eyeZ
-    //xcenter, ycenter, 0.0, // centerX, centerY, centerZ
-    //0.0, 1.0, 0.0); // upX, upY, upZ
-    //camera(xcenter, ycenter, mouseX+500, // eyeX, eyeY, eyeZ
-    //xcenter, ycenter, 0.0, // centerX, centerY, centerZ
-    //0.0, 1.0, 0.0); // upX, upY, upZ
 
     if (process_file)
     {
@@ -199,21 +184,23 @@ void draw() {
     }
 
     dt++;
-    //dt+=10;
 
-    //if (dt>=nlines)
-    //{
-    //dt = 1;
-    //}
-
-    // Change height of the camera with mouseY
-    //camera(xcenter, ycenter, (screen_height/2.0) / tan(PI*60.0 / 360.0), // eyeX, eyeY, eyeZ
-    //xcenter, ycenter, 600.0, // centerX, centerY, centerZ
-    //0.0, 1.0, 0.0); // upX, upY, upZ
-
-    controlP5.draw();
+    //controlP5.draw();
+    // makes the gui stay on top of elements
+    // drawn before.
+    hint(DISABLE_DEPTH_TEST);
+    gui();
 
 }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void gui() {
+    currCameraMatrix = new PMatrix3D(g3.camera);
+    camera();
+    controlP5.draw();
+    g3.camera = currCameraMatrix;
+    }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -359,39 +346,8 @@ void customize_filelist(DropdownList ddl) {
 }
 
 
-
-void keyPressed() {
-    if(key=='1') {
-        // set the height of a pulldown menu, should always be a multiple of itemHeight
-        p1.setHeight(210);
-    } 
-    else if(key=='2') {
-        // set the height of a pulldown menu, should always be a multiple of itemHeight
-        p1.setHeight(120);
-    }
-    else if(key=='i') {
-        // set the height of a pulldown menu item, should always be a fraction of the pulldown menu
-        p1.setItemHeight(30);
-    } 
-    else if(key=='u') {
-        // set the height of a pulldown menu item, should always be a fraction of the pulldown menu
-        p1.setItemHeight(10);
-        p1.setBackgroundColor(color(100,0,0));
-    } 
-    else if(key=='a') {
-        // add new items to the pulldown menu
-        int n = (int)(random(100000));
-        p1.addItem("item "+n, n);
-    } 
-    else if(key=='d') {
-        // remove items from the pulldown menu  by name
-        p1.removeItem("item "+cnt);
-        cnt++;
-    }
-    else if(key=='c') {
-        p1.clear();
-    }
-}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void controlEvent(ControlEvent theEvent) {
     // PulldownMenu is if type ControlGroup.
