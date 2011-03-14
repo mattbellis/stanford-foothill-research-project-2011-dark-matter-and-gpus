@@ -128,7 +128,7 @@ void setup()
     cam = new PeasyCam(this, xcenter, ycenter, -depth, 2.0*depth);
     //cam = new PeasyCam(this, 100);
     cam.setMinimumDistance(50);
-    cam.setMaximumDistance(4000);
+    cam.setMaximumDistance(10*depth);
 
     //size(screen_width,screen_height,OPENGL);
     frameRate(30);
