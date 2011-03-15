@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     long double x = 0, y= 0,z = 0, force=0, force_part=0; 
     int NUM_PARTICLES;
 
-    if (argc < 3)     
+    if (argc < 4)     
     {
         cerr << endl;
         cerr << "Must pass in config and diagnostic files on command line!" << endl;
@@ -45,8 +45,10 @@ int main(int argc, char **argv)
 
     ifstream infile(argv[1]); 
     
-    ofstream outfile(argv[2]);
+    ofstream outfile_max(argv[2]);
     
+    ofstream outfile_pos(argv[3]);
+ 
     ////////////////////////////////////////////////////////////////////////////
     // Read in the config file
     ////////////////////////////////////////////////////////////////////////////
@@ -116,16 +118,16 @@ int main(int argc, char **argv)
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0, eps = 1.2e17;
+    double Gm1m2 = 0.0, eps = 0 ;
 
-    outfile << "Time," << "Force," << "Velocity," << "Acceleration\n";
+    outfile_max << "Time," << "Force," << "Velocity," << "Acceleration\n";
     while(true)
     {
         
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
-        if(num_time_steps > 1000000)
+        if(num_time_steps > 250000)
            exit(1);
         if (num_time_steps%10000==0)
         {
@@ -258,18 +260,17 @@ int main(int argc, char **argv)
         ////////////////////////////////////////////////////////////////////////
 
         time_to_hit += time;
-//       outfile << "Time\tForce\tvelocity\tAcceleration\n";
         if(int(time_to_hit) % 1000 == 0)
         {
-           cout << time_to_hit << ",";
-           outfile << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
+           outfile_pos << time_to_hit << ",";
+           outfile_max << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
                    << max_accel << ", " << endl; 
            for (int i=0;i<NUM_PARTICLES;i++) 
            {
-              cout << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
+              outfile_pos << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
            }
 
-           cout << endl;
+           outfile_pos << endl;
        }
 
        num_time_steps++;
@@ -277,7 +278,8 @@ int main(int argc, char **argv)
        max_accel = 0.0; 
        max_vel = 0.0;
     }
-    outfile.close();
+    outfile_max.close();
+    outfile_pos.close();
     cerr << "time in seconds: " << time_to_hit<< endl;    
     cerr << ChangeSecToDays(time_to_hit) << " days.\n\n";    
     return 0;
