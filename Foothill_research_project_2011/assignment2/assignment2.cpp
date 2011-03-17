@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     {
         cerr << endl;
         cerr << "Must pass in config and diagnostic files on command line!" << endl;
-        cerr << "Usage: " << argv[0] << " <config file> <diagnostic file> " << endl;
+        cerr << "Usage: " << argv[0] << " <config file> <diagnostic file> <output file> " << endl;
         cerr << endl; 
         exit(1); 
     }
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
     long double mass[NUM_PARTICLES], force_comp[3], force_total[NUM_PARTICLES][3];
     double pos[NUM_PARTICLES][3], vel[NUM_PARTICLES][3], acc[NUM_PARTICLES][3];
-
+    double mom[NUM_PARTICLES][3], mom_comp[3];
     string dummy;
     if(infile.good()) 
     {
@@ -95,6 +95,8 @@ int main(int argc, char **argv)
             force_total[i][j] = 0.0;
             acc[i][j] = 0.0;
             dist[i][j] = 0.0;
+            mom_comp[j] = 0.0;
+            mom[i][j] = 0.0;
         }
     }
 
@@ -118,9 +120,10 @@ int main(int argc, char **argv)
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0, eps = 0 ;
+    double Gm1m2 = 0.0, eps = 1e16;
 
-    outfile_max << "Time," << "Force," << "Velocity," << "Acceleration\n";
+    outfile_max << "Time," << "Force," << "Velocity," << "Acceleration,"
+                << "Momentum," << "Momentum_x," << "Momentum_y," << "Momentum_z\n";
     while(true)
     {
         
@@ -201,6 +204,7 @@ int main(int argc, char **argv)
         }
 
         double accel_magn_part=0.0, vel_magn_part=0.0;
+        double momentum_total = 0.0, momentum_sq = 0.0;
 
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
@@ -209,7 +213,8 @@ int main(int argc, char **argv)
                 acc[i][k] = Acceleration(mass[i], force_total[i][k]);
                 vel_temp[k] = vel[i][k];
                 vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
-
+                mom[i][k] = mass[i] * vel[i][k];
+                mom_comp[k] += mom[i][k]; 
                 pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
                 force_total[i][k] = 0.0;
 
@@ -225,7 +230,13 @@ int main(int argc, char **argv)
             vel_magn_part = 0.0;
             accel_magn_part = 0.0;
         }
-
+        double mom_pordz;
+        for(int k= 0; k<3; k++)
+        {
+          momentum_sq += mom_comp[k] * mom_comp[k];
+        }
+        momentum_total = sqrt(momentum_sq);   
+        momentum_sq = 0.0;
         ////////////////////////////////////////////////////////////////////////
         // Need to check to see if acceleration is too big!
         ////////////////////////////////////////////////////////////////////////
@@ -258,13 +269,22 @@ int main(int argc, char **argv)
         if (too_close)
             exit(0);
         ////////////////////////////////////////////////////////////////////////
-
+        /// Write the data into diagnostic and output files 
+        ///////////////////////////////////////////////////////////////////////
+        
         time_to_hit += time;
         if(int(time_to_hit) % 1000 == 0)
         {
            outfile_pos << time_to_hit << ",";
            outfile_max << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
-                   << max_accel << ", " << endl; 
+                   << max_accel << ", " << momentum_total << ", "; 
+           for(int k=0; k<3; k++)
+           {
+              outfile_max << mom_comp[k] << ", ";
+              mom_comp[k] = 0.0;
+           }
+           outfile_max << endl;
+           
            for (int i=0;i<NUM_PARTICLES;i++) 
            {
               outfile_pos << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << ",";
@@ -277,6 +297,7 @@ int main(int argc, char **argv)
        max_force = 0.0;
        max_accel = 0.0; 
        max_vel = 0.0;
+       momentum_total = 0.0;
     }
     outfile_max.close();
     outfile_pos.close();
