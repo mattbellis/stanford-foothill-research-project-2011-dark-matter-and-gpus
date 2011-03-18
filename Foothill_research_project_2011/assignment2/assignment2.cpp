@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
     ifstream infile(argv[1]); 
     
-    ofstream outfile_max(argv[2]);
+    ofstream outfile_diag(argv[2]);
     
     ofstream outfile_pos(argv[3]);
  
@@ -92,7 +92,6 @@ int main(int argc, char **argv)
         for (int j=0; j<3; j++) 
         {
             force_comp[j] = 0.0;
-            force_total[i][j] = 0.0;
             acc[i][j] = 0.0;
             dist[i][j] = 0.0;
             mom_comp[j] = 0.0;
@@ -115,14 +114,18 @@ int main(int argc, char **argv)
     double max_force = 0.0, max_vel = 0.0, max_accel=0.0;
     double vel_magn =0.0, accel_magn =0.0;
     
-    cout << NUM_PARTICLES << endl;
+    outfile_pos << NUM_PARTICLES << endl;
 
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0, eps = 1e16;
-
-    outfile_max << "Time," << "Force," << "Velocity," << "Acceleration,"
+    double Gm1m2 = 0.0, eps = 0;
+    
+    double accel_magn_part= 0.0, vel_magn_part= 0.0;
+    double momentum_total = 0.0, momentum_sq; 
+    double kinetik_total = 0.0, potent_total = 0.0, energy_total = 0.0;
+  
+    outfile_diag << "Time," << "Force," << "Velocity," << "Acceleration,"
                 << "Momentum," << "Momentum_x," << "Momentum_y," << "Momentum_z\n";
     while(true)
     {
@@ -140,6 +143,9 @@ int main(int argc, char **argv)
             
         for(int i=0; i<NUM_PARTICLES; i++)
         {
+	    for(int m=0; m < 3; m++)
+		force_total[i][m]=0.0;
+
             for(int j=0; j<NUM_PARTICLES; j++)
             {
                 if(i != j)
@@ -156,41 +162,17 @@ int main(int argc, char **argv)
                     Gm1m2 = GRAV_CONST* mass[i]* mass[j];
                     force_part = Gm1m2/local_dist_cubed;
                     
+		    if(i < j)
+		    {
+                       potent_total += Gm1m2 / local_dist;
+                    }
+
                     force = Gm1m2 / local_dist_sq;
                     if(force > max_force)
                        max_force = force;
                     x = pos[j][0] - pos[i][0];
                     y = pos[j][1] - pos[i][1];
                     z = pos[j][2] - pos[i][2];
-                    //absx = abs(x);
-                    //absy = abs(y);
-                    //absz = abs(z);
-
-                    /*
-                    if(x != 0)
-                        unit_vector_x = x /absx;
-                    else
-                        unit_vector_x = 1;
-                    if(y != 0)
-                        unit_vector_y = y /absy;
-                    else
-                        unit_vector_y = 1;
-                    if(z != 0)		         
-                        unit_vector_z = z /absz;
-                    else
-                        unit_vector_z =1;
-
-                    k = sqrt(local_dist_sq - z * z);
-
-                    cos_phi = absx / k;
-                    sin_phi = absy / k;
-                    cos_theta = absz / local_dist; 
-                    sin_theta = k / local_dist;
-                    */
-
-                    //force_comp[0] = force * sin_theta * cos_phi * unit_vector_x;
-                    //force_comp[1] = force * sin_theta * sin_phi * unit_vector_y; 
-                    //force_comp[2] = force * cos_theta * unit_vector_z;
 
                     force_comp[0] = force_part * x;
                     force_comp[1] = force_part * y;
@@ -203,8 +185,7 @@ int main(int argc, char **argv)
             }
         }
 
-        double accel_magn_part=0.0, vel_magn_part=0.0;
-        double momentum_total = 0.0, momentum_sq = 0.0;
+
 
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
@@ -216,7 +197,6 @@ int main(int argc, char **argv)
                 mom[i][k] = mass[i] * vel[i][k];
                 mom_comp[k] += mom[i][k]; 
                 pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
-                force_total[i][k] = 0.0;
 
                 vel_magn_part += vel[i][k] * vel[i][k];
                 accel_magn_part += acc[i][k] * acc[i][k];
@@ -227,16 +207,23 @@ int main(int argc, char **argv)
                max_vel = vel_magn;
             if(accel_magn > max_accel)
                max_accel = accel_magn;
+
+            kinetik_total += 0.5 * mass[i] * vel_magn_part * vel_magn_part;
+             
+	    potent_total *= -1.0; 
+	    energy_total += kinetik_total + potent_total;
+
             vel_magn_part = 0.0;
             accel_magn_part = 0.0;
+            
         }
-        double mom_pordz;
+        
+        momentum_sq = 0.0;
         for(int k= 0; k<3; k++)
         {
           momentum_sq += mom_comp[k] * mom_comp[k];
         }
         momentum_total = sqrt(momentum_sq);   
-        momentum_sq = 0.0;
         ////////////////////////////////////////////////////////////////////////
         // Need to check to see if acceleration is too big!
         ////////////////////////////////////////////////////////////////////////
@@ -276,14 +263,15 @@ int main(int argc, char **argv)
         if(int(time_to_hit) % 1000 == 0)
         {
            outfile_pos << time_to_hit << ",";
-           outfile_max << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
-                   << max_accel << ", " << momentum_total << ", "; 
+           outfile_diag << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
+                   << max_accel << ", " << momentum_total << ", " << energy_total << ", "
+                   << kinetik_total << ", " << potent_total; 
            for(int k=0; k<3; k++)
            {
-              outfile_max << mom_comp[k] << ", ";
+             // outfile_max << mom_comp[k] << ", ";
               mom_comp[k] = 0.0;
            }
-           outfile_max << endl;
+           outfile_diag << endl;
            
            for (int i=0;i<NUM_PARTICLES;i++) 
            {
@@ -298,8 +286,9 @@ int main(int argc, char **argv)
        max_accel = 0.0; 
        max_vel = 0.0;
        momentum_total = 0.0;
+       kinetik_total = 0.0; potent_total = 0.0; energy_total = 0.0;
     }
-    outfile_max.close();
+    outfile_diag.close();
     outfile_pos.close();
     cerr << "time in seconds: " << time_to_hit<< endl;    
     cerr << ChangeSecToDays(time_to_hit) << " days.\n\n";    
