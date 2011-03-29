@@ -23,8 +23,6 @@ def main():
     parser = OptionParser(usage = myusage)
     parser.add_option("-x", "--x-axis",  dest="x_index", default=0, 
             help="Column in file to use as x-axis values.")
-    parser.add_option("-y", "--y-axis",  dest="y_index", default=1, 
-            help="Column in file to use as y-axis values.")
     parser.add_option("-n", "--plot_every_nth_point",  dest="plot_every_nth_point",
             default=1, 
             help="If you're plotting a really big file, then only plot every nth point. [default=1]")
@@ -68,11 +66,9 @@ def main():
     ############################################################################
     
     x_index = int(options.x_index)
-    y_index = int(options.y_index)
     
     pts = [[],[]]
     xaxis_title = ""
-    yaxis_title = ""
     
     i = 0
     for row in infile:
@@ -82,13 +78,11 @@ def main():
 
         # Assume that there is header information that we will use for the
         # axis labels
-        if len(row)>y_index and i==0:
+        if i==0:
             xaxis_title = row[x_index]
-            yaxis_title = row[y_index]
         # Otherwise, it is data
-        elif len(row)>y_index and i>0 and i%plot_every_nth_point==0:
+        elif i>0 and i%plot_every_nth_point==0:
             pts[0].append(float(row[x_index]))
-            pts[1].append(float(row[y_index]))
 
         i += 1
     
@@ -102,10 +96,9 @@ def main():
     #Histogram
     my_plot = hist(pts[0], bins = 20, normed=1, facecolor='green', alpha=0.75) 
     subplots[0].set_xlabel(xaxis_title)
-   # subplots[0].set_ylabel(yaxis_title)
     
     infile_basename = filename.split('/')[-1].split('.')[0] 
-    output_file_name = "plot_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)
+    output_file_name = "plot_%s_x%d.png" % (infile_basename,x_index)
     plt.savefig(output_file_name)
     plt.show()
 
