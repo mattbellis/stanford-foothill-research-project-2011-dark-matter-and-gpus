@@ -125,7 +125,7 @@ void setup()
     //size(screen_width,screen_height,P3D);
     size(screen_width,screen_height,OPENGL);
     g3 = (PGraphics3D)g;
-    cam = new PeasyCam(this, xcenter, ycenter, -depth, 2.0*depth);
+    cam = new PeasyCam(this, xcenter, ycenter, 0, 2.0*depth);
     //cam = new PeasyCam(this, 100);
     cam.setMinimumDistance(50);
     cam.setMaximumDistance(10*depth);
@@ -198,6 +198,7 @@ void draw() {
 void gui() {
     currCameraMatrix = new PMatrix3D(g3.camera);
     camera();
+    noLights();
     controlP5.draw();
     g3.camera = currCameraMatrix;
     }
@@ -282,6 +283,7 @@ void draw_time_slice()
 
                     pushMatrix();
                     translate(x, y, -z);
+                    sphereDetail(10);
                     sphere(radius);
                     popMatrix();
 
