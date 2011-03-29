@@ -15,18 +15,11 @@ double const PI = 3.14;
 static int const MAX_PARTICLES = 1000;
 
 //methods definitions
-long double GravForce(long double grav, long double mass1,
-        long double mass2, long double dist);  
 double Acceleration(long double mass, long double force); 
 double Velocity(double accel, double vel_init, double time);
 long double Distance(long double x1, long double y1, long double z1,
         long double x2, long double y2, long double z2);
 long double DistancePart(double vel_fin, double vel_init, double time);
-double ChangeSecToDays(double time_sec);   
-void DisplayMassConst(long double mass1, long double mass2, 
-        long double grav_const);
-void DisplayCoordinates(long double x, long double y, long double z, double vel, double accel); 
-
 
 int main(int argc, char **argv)  
 {
@@ -102,14 +95,10 @@ int main(int argc, char **argv)
     cout.setf(ios_base::scientific,ios::fixed);  
     cout.precision(4); 
 
-    double total_distance;
-    double original_distance;
-    double cos_phi, sin_phi, cos_theta, sin_theta;
     double vel_temp[3];
     double pos_temp[3];
-    double absx,absy,absz;
 
-    double acc_cutoff = 0.01, unit_vector_x=0, unit_vector_y=0, unit_vector_z=0;
+    double acc_cutoff = 0.01;
     double k;
     double max_force = 0.0, max_vel = 0.0, max_accel=0.0;
     double vel_magn =0.0, accel_magn =0.0;
@@ -290,14 +279,7 @@ int main(int argc, char **argv)
     }
     outfile_diag.close();
     outfile_pos.close();
-    cerr << "time in seconds: " << time_to_hit<< endl;    
-    cerr << ChangeSecToDays(time_to_hit) << " days.\n\n";    
     return 0;
-}
-long double GravForce(long double GRAV, long double mass1,   
-        long double mass2, long double dist) 
-{ 
-    return (GRAV * mass1 * mass2) / (dist * dist);
 }
 double Acceleration(long double mass, long double force)
 {
@@ -308,10 +290,6 @@ double  Velocity(double accel, double vel_init, double time)
     double velocity_final = vel_init + accel * time;
     return velocity_final;
 }
-double ChangeSecToDays(double time_sec)
-{
-    return time_sec / HOUR_SEC / DAY_HOUR;  
-}
 long double Distance(long double x1, long double y1, long double z1,
         long double x2, long double y2, long double z2)  
 {
@@ -321,15 +299,4 @@ long double DistancePart(double vel_fin, double vel_init, double time)
 {
     long double distance = (vel_fin + vel_init) /2 * time;
     return distance;
-}
-void DisplayMassConst(long double mass1, long double mass2, 
-        long double grav_const)
-{
-    cout <<  grav_const / pow(10.0, -11) << "e8   " << mass1 / pow(10.0, 24)
-        << "e24   " <<  mass2 / pow(10.0, 20) << "e20  " << endl; 
-}
-void DisplayCoordinates(long double x, long double y, long double z,
-        double vel, double accel)
-{
-    cout <<  x << "," << y << "," << z << "," << vel << "," << accel << ",";
 }
