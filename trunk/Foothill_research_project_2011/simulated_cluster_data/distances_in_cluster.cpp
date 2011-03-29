@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////////
     string dummy, title;
    
-    float pos[NUM_PARTICLES][3];
+    float pos[1000][3];
     
     if(infile.good()) 
     {
@@ -77,21 +77,14 @@ int main(int argc, char **argv)
 
                     dist[i][j] = sqrt( x*x + y*y + z*z);
                     
-		    number_of_distances++;
+                    outfile_dist << dist[i][j] << endl;
+		
+                    number_of_distances++;
                 }
             }
         }
-     outfile_dist  <<  number_of_distances << endl; 
+     cerr <<  number_of_distances << endl; 
 
-     
-     for(int i=0; i<NUM_PARTICLES; i++)
-     {
-         for(int j=0; j<NUM_PARTICLES; j++)
-         {
-            if(dist[i][j] != 0.0)
-                outfile_dist << dist[i][j] << endl;
-         }
-     }
     outfile_dist.close();
     return 0;
 }
