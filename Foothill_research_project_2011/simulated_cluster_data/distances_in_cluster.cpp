@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         {
             infile >> pos[i][0] >> dummy;
             infile >> pos[i][1] >> dummy;
-            infile >> pos[i][2] >> dummy;
+            infile >> pos[i][2];
         }
     } 
     else
