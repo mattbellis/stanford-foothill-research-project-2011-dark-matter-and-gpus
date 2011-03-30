@@ -15,11 +15,8 @@ double const PI = 3.14;
 static int const MAX_PARTICLES = 1000;
 
 //methods definitions
-double Acceleration(long double mass, long double force); 
-double Velocity(double accel, double vel_init, double time);
 long double Distance(long double x1, long double y1, long double z1,
         long double x2, long double y2, long double z2);
-long double DistancePart(double vel_fin, double vel_init, double time);
 
 int main(int argc, char **argv)  
 {
@@ -180,12 +177,12 @@ int main(int argc, char **argv)
         {
             for(int k=0; k<3; k++)
             {
-                acc[i][k] = Acceleration(mass[i], force_total[i][k]);
+                acc[i][k] = force_total[i][k] / mass[i];
                 vel_temp[k] = vel[i][k];
-                vel[i][k] = Velocity(acc[i][k], vel_temp[k], time);
+                vel[i][k] = vel_temp[k] + acc[i][k] * time;
                 mom[i][k] = mass[i] * vel[i][k];
                 mom_comp[k] += mom[i][k]; 
-                pos[i][k] += DistancePart(vel[i][k], vel_temp[k], time); 
+                pos[i][k] += (vel[i][k] + vel_temp[k])/2 * time; 
 
                 vel_magn_part += vel[i][k] * vel[i][k];
                 accel_magn_part += acc[i][k] * acc[i][k];
@@ -281,22 +278,8 @@ int main(int argc, char **argv)
     outfile_pos.close();
     return 0;
 }
-double Acceleration(long double mass, long double force)
-{
-    return force / mass;
-}
-double  Velocity(double accel, double vel_init, double time)  
-{
-    double velocity_final = vel_init + accel * time;
-    return velocity_final;
-}
 long double Distance(long double x1, long double y1, long double z1,
         long double x2, long double y2, long double z2)  
 {
     return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1));  
-}
-long double DistancePart(double vel_fin, double vel_init, double time)
-{
-    long double distance = (vel_fin + vel_init) /2 * time;
-    return distance;
 }

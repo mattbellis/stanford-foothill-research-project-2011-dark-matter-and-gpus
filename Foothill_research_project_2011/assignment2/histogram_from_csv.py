@@ -94,7 +94,7 @@ def main():
     # my_plot = scatter(pts[0], pts[1])
     
     #Histogram
-    my_plot = hist(pts[0], bins = 20, normed=1, facecolor='green', alpha=0.75) 
+    my_plot = hist(pts[0], bins = 50, normed=1, facecolor='green', alpha=0.75) 
     subplots[0].set_xlabel(xaxis_title)
     
     infile_basename = filename.split('/')[-1].split('.')[0] 
