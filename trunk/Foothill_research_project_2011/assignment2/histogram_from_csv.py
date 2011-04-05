@@ -64,7 +64,9 @@ def main():
 
     infile = csv.reader(open(filename, 'rb'), delimiter=',', quotechar='#')
     ############################################################################
-    
+    plt.xticks(fontsize=14, weight='bold')
+    plt.yticks(fontsize=14, weight='bold')
+   
     x_index = int(options.x_index)
     
     pts = [[],[]]
@@ -95,8 +97,11 @@ def main():
     
     #Histogram
     my_plot = hist(pts[0], bins = 50, normed=1, facecolor='green', alpha=0.75) 
-    subplots[0].set_xlabel(xaxis_title)
-    
+      
+    subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
+
+    subplots[0].set_xlim(0, 8e25)
+
     infile_basename = filename.split('/')[-1].split('.')[0] 
     output_file_name = "plot_%s_x%d.png" % (infile_basename,x_index)
     plt.savefig(output_file_name)
