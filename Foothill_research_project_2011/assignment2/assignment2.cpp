@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0, eps = 1e15;
+    double Gm1m2 = 0.0, eps = 0.0;
     
     double accel_magn_part= 0.0, vel_magn_part= 0.0;
     double momentum_total = 0.0, momentum_sq; 
