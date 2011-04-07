@@ -10,6 +10,7 @@ import csv
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import matplotlib.font_manager as fm
+
 from optparse import OptionParser
 from pylab import *
 
@@ -73,11 +74,11 @@ def main():
 
     x_index = int(options.x_index)
     y_index = int(options.y_index)
-    
+
     pts = [[],[]]
     xaxis_title = ""
     yaxis_title = ""
-    
+   
     i = 0
     for row in infile:
         #print row
@@ -88,26 +89,25 @@ def main():
         # axis labels
         if len(row)>y_index and i==0:
             xaxis_title = row[x_index]
-            yaxis_title = row[y_index]
+            yaxis_title = "Log of " + row[y_index]
         # Otherwise, it is data
         elif len(row)>y_index and i>0 and i%plot_every_nth_point==0:
             pts[0].append(float(row[x_index]))
-            pts[1].append(float(row[y_index]))
-
+           
+            pts[1].append(log10(float(row[y_index])))
+   
         i += 1
     
     
     # The plot of the data
     # Line 
-  #  my_plot = plot(pts[0], pts[1])
+    # my_plot = plot(pts[0], pts[1])
     # Points
+
     my_plot = scatter(pts[0], pts[1])
     
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
     subplots[0].set_ylabel(yaxis_title, fontsize=14, weight='bold')
-    
-#    subplots[0].set_xlim(-20, 20)
-#    subplots[0].set_ylim(-20, 20)
     
     infile_basename = filename.split('/')[-1].split('.')[0] 
     output_file_name = "plot_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)

@@ -96,11 +96,9 @@ def main():
     # my_plot = scatter(pts[0], pts[1])
     
     #Histogram
-    my_plot = hist(pts[0], bins = 50, normed=1, facecolor='green', alpha=0.75) 
-      
-    subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
+    my_plot = hist(pts[0], bins = 50, facecolor='blue', alpha=0.75, range=(0,3e26)) 
 
-    subplots[0].set_xlim(0, 8e25)
+    subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
 
     infile_basename = filename.split('/')[-1].split('.')[0] 
     output_file_name = "plot_%s_x%d.png" % (infile_basename,x_index)
