@@ -194,7 +194,7 @@ int main(int argc, char **argv)
             if(accel_magn > max_accel)
                max_accel = accel_magn;
 
-            kinetik_total += 0.5 * mass[i] * vel_magn_part * vel_magn_part;
+            kinetik_total += 0.5 * mass[i] * vel_magn_part;
              
 	    potent_total *= -1.0; 
 	    energy_total += kinetik_total + potent_total;

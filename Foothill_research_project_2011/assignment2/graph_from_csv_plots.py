@@ -108,7 +108,11 @@ def main():
     
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
     subplots[0].set_ylabel(yaxis_title, fontsize=14, weight='bold')
-    
+   
+#    subplots[0].set_xlim(3e7)
+#    subplots[0].set_ylim
+
+ 
     infile_basename = filename.split('/')[-1].split('.')[0] 
     output_file_name = "plot_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)
     plt.savefig(output_file_name)
