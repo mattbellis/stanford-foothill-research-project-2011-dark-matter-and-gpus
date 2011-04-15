@@ -105,7 +105,8 @@ int main(int argc, char **argv)
     double local_dist = 0.0;
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
-    double Gm1m2 = 0.0, eps = 0.0;
+    //double local_dist_plus_eps = 0.0;
+    double Gm1m2 = 0.0, eps = 1e9;
     
     double accel_magn_part= 0.0, vel_magn_part= 0.0;
     double momentum_total = 0.0, momentum_sq; 
@@ -131,18 +132,16 @@ int main(int argc, char **argv)
         {
 	    for(int m=0; m < 3; m++)
 		force_total[i][m]=0.0;
-
             for(int j=0; j<NUM_PARTICLES; j++)
             {
                 if(i != j)
                 {
-
                     dist[i][j] = Distance(pos[i][0], pos[i][1], pos[i][2], 
                             pos[j][0], pos[j][1], pos[j][2]);
-
-                    local_dist = dist[i][j];
+                    
+                    local_dist = dist[i][j] + eps;
                     local_dist_sq = local_dist * local_dist;
-                    local_dist_cubed = local_dist * (local_dist * local_dist + eps);
+                    local_dist_cubed = dist[i][j] * (local_dist * local_dist);
 
                     //force = GravForce(GRAV_CONST, mass[i], mass[j], local_dist); 
                     Gm1m2 = GRAV_CONST* mass[i]* mass[j];
@@ -171,8 +170,6 @@ int main(int argc, char **argv)
             }
         }
 
-
-
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
             for(int k=0; k<3; k++)
@@ -195,14 +192,13 @@ int main(int argc, char **argv)
                max_accel = accel_magn;
 
             kinetik_total += 0.5 * mass[i] * vel_magn_part;
-             
-	    potent_total *= -1.0; 
-	    energy_total += kinetik_total + potent_total;
 
             vel_magn_part = 0.0;
             accel_magn_part = 0.0;
-            
         }
+        
+	potent_total *= -1.0; 
+	energy_total += kinetik_total + potent_total;
         
         momentum_sq = 0.0;
         for(int k= 0; k<3; k++)
@@ -217,12 +213,12 @@ int main(int argc, char **argv)
         bool too_close = false;
         for (int i=0; i<NUM_PARTICLES; i++) 
         {
-            for (int j=0; j<3; j++) 
+            for (int k=0; k<3; k++) 
             {
-                if(abs(acc[i][j]) > acc_cutoff && acceleration_is_too_big==false)
+                if(abs(acc[i][k]) > acc_cutoff && acceleration_is_too_big==false)
                 {
                     if(time < 10)
-                        break;
+		       break;
                     acceleration_is_too_big = true;
                     acc_cutoff *= 2;
                     time = time / 2;
@@ -230,10 +226,13 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                    if (i!=j && dist[i][j] < 1e4)
-                    {
-                        cerr << dist[i][j] << endl;
-                        too_close = true;
+                    for (int j=0; j < NUM_PARTICLES; j++)
+		    {
+                       if (i!=j && dist[i][j] < 1e4)
+        	       {
+                          cerr << dist[i][j] << endl;
+		          too_close = true;
+                       }
                     }
                 }
             }
