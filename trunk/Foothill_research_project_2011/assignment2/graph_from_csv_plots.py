@@ -89,12 +89,13 @@ def main():
         # axis labels
         if len(row)>y_index and i==0:
             xaxis_title = row[x_index]
-            yaxis_title = "Log of " + row[y_index]
+            yaxis_title = row[y_index]
         # Otherwise, it is data
         elif len(row)>y_index and i>0 and i%plot_every_nth_point==0:
             pts[0].append(float(row[x_index]))
            
-            pts[1].append(log10(float(row[y_index])))
+            pts[1].append(float(row[y_index]))
+            # pts[1].append(log10(float(row[y_index])))
    
         i += 1
     
