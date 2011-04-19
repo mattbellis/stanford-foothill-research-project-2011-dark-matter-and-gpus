@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
     //double local_dist_plus_eps = 0.0;
-    double Gm1m2 = 0.0, eps = 1e9;
+    double Gm1m2 = 0.0, eps = 0.0;
     
     double accel_magn_part= 0.0, vel_magn_part= 0.0;
     double momentum_total = 0.0, momentum_sq; 
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
                     
 		    if(i < j)
 		    {
-                       potent_total += Gm1m2 / local_dist;
+                       potent_total += Gm1m2 / dist[i][j];
                     }
 
                     force = Gm1m2 / local_dist_sq;
