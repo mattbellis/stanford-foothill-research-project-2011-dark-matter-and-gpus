@@ -149,13 +149,14 @@ int main(int argc, char **argv)
                     
 		    if(i < j)
 		    {
-                       potent_total += Gm1m2 / dist[i][j];
+                       potent_total += Gm1m2 / local_dist;
                     }
 
                     force = Gm1m2 / local_dist_sq;
                     if(force > max_force)
                        max_force = force;
                     x = pos[j][0] - pos[i][0];
+
                     y = pos[j][1] - pos[i][1];
                     z = pos[j][2] - pos[i][2];
 
