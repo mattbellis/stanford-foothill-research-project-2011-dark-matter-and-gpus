@@ -14,7 +14,7 @@ for nline,line in enumerate(infile):
 
     if nline == line_to_parse:
 
-        print line
+       # print line
         vals = line.split(',')
 
         nvals = len(vals)
@@ -31,7 +31,7 @@ for nline,line in enumerate(infile):
 
             if (i)%3==0:
                 output += "\n"
-                print output 
+   #             print output 
 
                 outfile.write(output)
 
