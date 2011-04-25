@@ -68,6 +68,10 @@ def main():
 
     infile = csv.reader(open(filename, 'rb'), delimiter=',', quotechar='#')
     ############################################################################
+
+    formatter = ScalarFormatter()
+    formatter.set_scientific(True)
+    formatter.set_powerlimits((-4,4))
     
     plt.xticks(fontsize=14, weight='bold')
     plt.yticks(fontsize=14, weight='bold')
@@ -107,6 +111,8 @@ def main():
 
     my_plot = scatter(pts[0], pts[1])
     
+    subplots[0].xaxis.set_major_formatter(formatter)
+
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
     subplots[0].set_ylabel(yaxis_title, fontsize=14, weight='bold')
    

@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
     long double dist[NUM_PARTICLES][NUM_PARTICLES];
 
-    double time = 1000, time_to_hit = 0; 
+    double time = 1000, current_time = 0; 
 
     int num_time_steps = 0;
 
@@ -106,7 +106,9 @@ int main(int argc, char **argv)
     double local_dist_sq = 0.0;
     double local_dist_cubed = 0.0;
     //double local_dist_plus_eps = 0.0;
-    double Gm1m2 = 0.0, eps = 0.0;
+    double Gm1m2 = 0.0, eps = 1e7;
+
+    int prev_time_printed_out = 0.0;
     
     double accel_magn_part= 0.0, vel_magn_part= 0.0;
     double momentum_total = 0.0, momentum_sq; 
@@ -231,7 +233,7 @@ int main(int argc, char **argv)
 		    {
                        if (i!=j && dist[i][j] < 1e4)
         	       {
-                          cerr << dist[i][j] << endl;
+                          cerr << "Too close! " << dist[i][j] << endl;
 		          too_close = true;
                        }
                     }
@@ -245,11 +247,17 @@ int main(int argc, char **argv)
         /// Write the data into diagnostic and output files 
         ///////////////////////////////////////////////////////////////////////
         
-        time_to_hit += time;
-        if(int(time_to_hit) % 1000 == 0)
+        current_time += time;
+	//if (num_time_steps > 4e6)
+	//if (1)
+	//{
+		//cerr << "current_time: " << int(current_time) << endl;
+	//}
+        //if(int(current_time) % 1000 == 0)
+        if(current_time>=prev_time_printed_out+1000)
         {
-           outfile_pos << time_to_hit << ",";
-           outfile_diag << time_to_hit << ", " << max_force << ", " << max_vel << ", " 
+           outfile_pos << current_time << ",";
+           outfile_diag << current_time << ", " << max_force << ", " << max_vel << ", " 
                    << max_accel << ", " << momentum_total << ", " << energy_total << ", "
                    << kinetik_total << ", " << potent_total; 
            for(int k=0; k<3; k++)
@@ -265,6 +273,7 @@ int main(int argc, char **argv)
            }
 
            outfile_pos << endl;
+           prev_time_printed_out = current_time;
        }
 
        num_time_steps++;
