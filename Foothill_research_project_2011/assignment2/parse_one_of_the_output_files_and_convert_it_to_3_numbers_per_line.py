@@ -24,10 +24,13 @@ for nline,line in enumerate(infile):
         output = "%d\n" % (nparticles)
         outfile.write(output)
 
+        output = "Coord_X, Coord_Y , Coord_Z\n"
+        outfile.write(output)
+ 
         output = ""
         for i in range(1,nvals):
 
-            output += "%s," % (vals[i])
+            output += "%s , " % (vals[i])
 
             if (i)%3==0:
                 output += "\n"

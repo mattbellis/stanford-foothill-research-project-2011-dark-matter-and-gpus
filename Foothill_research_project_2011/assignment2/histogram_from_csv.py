@@ -96,7 +96,7 @@ def main():
     # my_plot = scatter(pts[0], pts[1])
     
     #Histogram
-    my_plot = hist(pts[0], bins = 50, facecolor='blue', alpha=0.75, range=(0,3e26)) 
+    my_plot = hist(pts[0], bins = 50, facecolor='blue', alpha=0.75, range=(0,9e9)) 
 
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
 
