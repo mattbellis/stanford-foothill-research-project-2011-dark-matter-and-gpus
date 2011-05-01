@@ -116,8 +116,8 @@ def main():
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
     subplots[0].set_ylabel(yaxis_title, fontsize=14, weight='bold')
    
-#    subplots[0].set_xlim(3e7)
-#    subplots[0].set_ylim
+   # subplots[0].set_xlim(1.5e9)
+   # subplots[0].set_ylim(1.5e9)
 
  
     infile_basename = filename.split('/')[-1].split('.')[0] 
