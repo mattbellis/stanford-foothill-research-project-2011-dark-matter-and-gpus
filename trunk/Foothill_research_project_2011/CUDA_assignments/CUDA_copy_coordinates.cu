@@ -4,9 +4,9 @@
 #include<cstdlib>
 #include<fstream>
 
-__global__ voidcoppy_coordinates(float *dev_x, int *dev_y, int *dev_z)
+__global__ void copy_coordinates(float *dev_x, float *dev_y, float *dev_z)
 {
-   
+  
 }
 
 
@@ -67,9 +67,11 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
 
-    cudaMemcpy(dev_pos_x, pos[0], size, cudaMemcpyHostToDevice );
-   
-
+    cudaMemcpy(dev_pos_x, pos[NUM_PARTICLES][0], size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_pos_y, pos[NUM_PARTICLES][1], size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_pos_z, pos[NUM_PARTICLES][2], size, cudaMemcpyHostToDevice );
+    
+    
     cudaFree(dev_pos_x);
     cudaFree(dev_pos_y);  
     cudaFree(dev_pos_z);
