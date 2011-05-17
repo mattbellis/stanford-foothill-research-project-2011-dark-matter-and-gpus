@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     int NUM_PARTICLES;
 
-    if (argc < 3)
+    if (argc < 2)
     {
         cerr << endl;
         cerr << "Must pass in cluster_data file  on command line!" << endl;
@@ -81,11 +81,11 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
     
-for(int k=0; k< NUM_PARTICLES; k++)
-   cerr << pos_x[k];    
+    for(int k=0; k< NUM_PARTICLES; k++)
+       printf("%e ", pos_x[k]);    
 
 
-free(pos_x);
+    free(pos_x);
     free(pos_y);
     free(pos_z);
     
