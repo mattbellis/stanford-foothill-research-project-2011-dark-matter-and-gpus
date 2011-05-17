@@ -6,7 +6,7 @@
 
 __global__ void copy_coordinates(float *dev_x, float *dev_y, float *dev_z)
 {
-  
+      
 }
 
 
@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 {
 
     float *dev_pos_x, *dev_pos_y, *dev_pos_z;
+    float *pos_x, *pos_y, *pos_z;
 
     int NUM_PARTICLES;
 
@@ -33,25 +34,19 @@ int main(int argc, char **argv)
     //////////////////////////////////////////////////////////////////////
     // Read in the cluster_data file
     ////////////////////////////////////////////////////////////////////////////
-    infile >> NUM_PARTICLES;
 
     string axis_titles;
-    for(int m=0; m <3; m++)
-       infile >> axis_titles >> axis_titles;
-
-    float pos[NUM_PARTICLES][3];
-
+  
+    
     string dummy;
 
     if(infile.good())
     {
-        for(int i=0; i<NUM_PARTICLES; i++)
-        {
+        infile >> NUM_PARTICLES;
+    
+        for(int m=0; m <3; m++)
+           infile >> axis_titles >> axis_titles;
 
-            infile >> pos[i][0] >> dummy;
-            infile >> pos[i][1] >> dummy;
-            infile >> pos[i][2] >> dummy;
-        }
 
     }
     else
@@ -59,18 +54,36 @@ int main(int argc, char **argv)
         cerr << "Couldn't open the file for input." << endl;
         exit(1);
     }
+
+ 
+    int size = NUM_PARTICLES * sizeof(float);    
+        
+    pos_x = (float*)malloc(size);
+    pos_y = (float*)malloc(size);
+    pos_z = (float*)malloc(size);
+   
+    for(int i=0; i<NUM_PARTICLES; i++)
+    {
+
+       infile >> pos_x[i] >> dummy;
+       infile >> pos_y[i] >> dummy;
+       infile >> pos_z[i] >> dummy;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     
-    int size = NUM_PARTICLES * sizeof(float);    
 
     cudaMalloc((void **) &dev_pos_x, size );
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
 
-    cudaMemcpy(dev_pos_x, pos[NUM_PARTICLES][0], size, cudaMemcpyHostToDevice );
-    cudaMemcpy(dev_pos_y, pos[NUM_PARTICLES][1], size, cudaMemcpyHostToDevice );
-    cudaMemcpy(dev_pos_z, pos[NUM_PARTICLES][2], size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
     
+    free(pos_x);
+    free(pos_y);
+    free(pos_z);
     
     cudaFree(dev_pos_x);
     cudaFree(dev_pos_y);  
