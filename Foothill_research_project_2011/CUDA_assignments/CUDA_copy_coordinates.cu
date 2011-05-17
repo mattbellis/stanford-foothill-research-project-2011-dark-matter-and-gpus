@@ -81,7 +81,11 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
     
-    free(pos_x);
+for(int k=0; k< NUM_PARTICLES; k++)
+   cerr << pos_x[k];    
+
+
+free(pos_x);
     free(pos_y);
     free(pos_z);
     
