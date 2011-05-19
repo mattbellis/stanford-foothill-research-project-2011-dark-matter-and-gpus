@@ -4,7 +4,7 @@
 #include<cstdlib>
 #include<fstream>
 
-__global__ void copy_coordinates(float *dev_x, float *dev_y, float *dev_z)
+__global__ void distance(float *x1, float *y1, float *z1)
 {
       
 }
@@ -22,10 +22,10 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        cerr << endl;
-        cerr << "Must pass in cluster_data file  on command line!" << endl;
-        cerr << "Usage: " << argv[0] << " <cluster_data file> <distances file> " << endl;
-        cerr << endl;
+        
+        printf("\nMust pass in cluster_data file  on command line!\n");
+        printf("\nUsage: ", argv[0] );
+        printf(" <cluster_data file> <distances file> \n\n");
         exit(1);
     }
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     }
     else
      {
-        cerr << "Couldn't open the file for input." << endl;
+        printf("Couldn't open the file for input.\n");
         exit(1);
     }
 
@@ -81,6 +81,7 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
     
+    printf("%i\n", NUM_PARTICLES);
     for(int k=0; k< NUM_PARTICLES; k++)
        printf("%e ", pos_x[k]);    
 
