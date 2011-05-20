@@ -9,13 +9,16 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
    float posx, posy, posz;
  
    int idx = blockIdx.x * blockDim.x + threadIdx.x;   
-    
-   for(int i=0; i<NUM_PART-1; i++)
+   int idx_dist = threadIdx.x * (NUM_PART-1); 
+   for(int i=0; i<NUM_PART; i++)
    {
-      posx = x[idx] - x[i+1];
-      posy = y[idx] - y[i+1];
-      posz = z[idx] - z[i+1];
-      dist[i] = sqrt(posx * posx + posy * posy + posz * posz); 
+      if(idx != i)
+      {  
+         posx = x[idx] - x[i];
+         posy = y[idx] - y[i];
+         posz = z[idx] - z[i];
+         dist[idx_dist + i] = sqrt(posx * posx + posy * posy + posz * posz); 
+      }
    }
 }
 
@@ -70,7 +73,7 @@ int main(int argc, char **argv)
     pos_x = (float*)malloc(size);
     pos_y = (float*)malloc(size);
     pos_z = (float*)malloc(size);
-    h_dist = (float *)malloc(size);
+    h_dist = (float *)malloc(size * size);
    
     for(int i=0; i<NUM_PARTICLES; i++)
     {
@@ -90,7 +93,7 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_x, size );
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
-    cudaMalloc((void **) &dev_dist, size);
+    cudaMalloc((void **) &dev_dist, size * size);
 
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
@@ -100,12 +103,12 @@ int main(int argc, char **argv)
     for(int k=0; k< NUM_PARTICLES; k++)
        printf("%e ", pos_x[k]);    
 
-    distance<<<block.x, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
+    distance<<<block, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
  
     cudaMemcpy(h_dist, dev_dist, size, cudaMemcpyDeviceToHost );
  
     printf("%s\n", "distances");
-    for(int k=0; k< NUM_PARTICLES; k++)
+    for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
        printf("%e ", h_dist);
     
     free(pos_x);
