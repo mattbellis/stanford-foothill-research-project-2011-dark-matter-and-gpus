@@ -115,7 +115,7 @@ int main(int argc, char **argv)
  
     printf("%s\n", "distances");
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
-       printf("%e ", h_dist);
+       printf("%e ", h_dist[k]);
     
     free(pos_x);
     free(pos_y);
