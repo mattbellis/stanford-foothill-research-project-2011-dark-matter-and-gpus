@@ -7,16 +7,16 @@
 __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist)
 {
    float posx, posy, posz;
-   
-   
+ 
+   int idx = blockIdx.x * blockDim.x + threadIdx.x;   
+    
    for(int i=0; i<NUM_PART-1; i++)
    {
-      posx = x[i+1] - x[i];
-      posy = y[i+1] - y[i];
-      posz = z[i+1] - z[i];
+      posx = x[idx] - x[i+1];
+      posy = y[idx] - y[i+1];
+      posz = z[idx] - z[i+1];
       dist[i] = sqrt(posx * posx + posy * posy + posz * posz); 
    }
-       
 }
 
 
@@ -57,7 +57,6 @@ int main(int argc, char **argv)
         for(int m=0; m <3; m++)
            infile >> axis_titles >> axis_titles;
 
-
     }
     else
      {
@@ -82,8 +81,12 @@ int main(int argc, char **argv)
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    
-
+   
+    dim3 grid,block;
+    block.x = 1;
+    grid.x = NUM_PARTICLES/block.x;
+ 
+   
     cudaMalloc((void **) &dev_pos_x, size );
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
@@ -97,10 +100,13 @@ int main(int argc, char **argv)
     for(int k=0; k< NUM_PARTICLES; k++)
        printf("%e ", pos_x[k]);    
 
-    distance<<<NUM_PARTICLES, 1 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
-
-    
+    distance<<<block.x, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
+ 
     cudaMemcpy(h_dist, dev_dist, size, cudaMemcpyDeviceToHost );
+ 
+    printf("%s\n", "distances");
+    for(int k=0; k< NUM_PARTICLES; k++)
+       printf("%e ", h_dist);
     
     free(pos_x);
     free(pos_y);
