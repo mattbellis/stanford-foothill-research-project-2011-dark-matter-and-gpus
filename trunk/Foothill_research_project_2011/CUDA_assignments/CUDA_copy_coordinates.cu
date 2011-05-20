@@ -9,7 +9,7 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
    float posx, posy, posz;
  
    int idx = blockIdx.x * blockDim.x + threadIdx.x;   
-   int idx_dist = threadIdx.x * (NUM_PART-1); 
+   int idx_dist = idx * (NUM_PART-1); 
    for(int i=0; i<NUM_PART; i++)
    {
       if(idx != i)
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
     distance<<<block, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
  
-    cudaMemcpy(h_dist, dev_dist, size, cudaMemcpyDeviceToHost );
+    cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
  
     printf("%s\n", "distances");
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
