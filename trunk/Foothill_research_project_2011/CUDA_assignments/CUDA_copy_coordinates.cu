@@ -4,9 +4,19 @@
 #include<cstdlib>
 #include<fstream>
 
-__global__ void distance(float *x1, float *y1, float *z1)
+__global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist)
 {
-      
+   float posx, posy, posz;
+   
+   
+   for(int i=0; i<NUM_PART-1; i++)
+   {
+      posx = x[i+1] - x[i];
+      posy = y[i+1] - y[i];
+      posz = z[i+1] - z[i];
+      dist[i] = sqrt(posx * posx + posy * posy + posz * posz); 
+   }
+       
 }
 
 
@@ -15,8 +25,8 @@ using namespace std;
 int main(int argc, char **argv)
 {
 
-    float *dev_pos_x, *dev_pos_y, *dev_pos_z;
-    float *pos_x, *pos_y, *pos_z;
+    float *dev_pos_x, *dev_pos_y, *dev_pos_z, *dev_dist;
+    float *pos_x, *pos_y, *pos_z, *h_dist;
 
     int NUM_PARTICLES;
 
@@ -61,6 +71,7 @@ int main(int argc, char **argv)
     pos_x = (float*)malloc(size);
     pos_y = (float*)malloc(size);
     pos_z = (float*)malloc(size);
+    h_dist = (float *)malloc(size);
    
     for(int i=0; i<NUM_PARTICLES; i++)
     {
@@ -76,6 +87,7 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_x, size );
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
+    cudaMalloc((void **) &dev_dist, size);
 
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
@@ -85,7 +97,11 @@ int main(int argc, char **argv)
     for(int k=0; k< NUM_PARTICLES; k++)
        printf("%e ", pos_x[k]);    
 
+    distance<<<NUM_PARTICLES, 1 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
 
+    
+    cudaMemcpy(h_dist, dev_dist, size, cudaMemcpyDeviceToHost );
+    
     free(pos_x);
     free(pos_y);
     free(pos_z);
