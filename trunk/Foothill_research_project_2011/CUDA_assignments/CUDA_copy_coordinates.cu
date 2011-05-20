@@ -95,6 +95,12 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_z, size );
     cudaMalloc((void **) &dev_dist, size * size);
 
+    if (0==h_dist || 0==dev_dist)
+    {
+        printf("couldn't allocate memory\n");
+        return 1;
+    }
+
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
