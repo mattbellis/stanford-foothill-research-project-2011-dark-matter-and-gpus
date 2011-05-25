@@ -18,10 +18,9 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
          posy = y[idx] - y[i];
          posz = z[idx] - z[i];
          dist[idx_dist + i] = sqrt(posx * posx + posy * posy + posz * posz); 
-      }
+     /}
    }
 }
-
 
 using namespace std;
 
@@ -33,7 +32,7 @@ int main(int argc, char **argv)
 
     int NUM_PARTICLES;
 
-    if (argc < 2)
+    if (argc < 3)
     {
         
         printf("\nMust pass in cluster_data file  on command line!\n");
@@ -44,13 +43,25 @@ int main(int argc, char **argv)
 
     ifstream infile(argv[1]);
 
+    FILE *output_dist;
+    
+    output_dist = fopen(argv[2], "w");
+    
+    if(!output_dist)
+    {
+         perror("Error opening file");
+         return 1;
+    }
+
+
+   // ofstream outile_distances(argv[2])
+
     //////////////////////////////////////////////////////////////////////
     // Read in the cluster_data file
     ////////////////////////////////////////////////////////////////////////////
 
     string axis_titles;
   
-    
     string dummy;
 
     if(infile.good())
@@ -101,9 +112,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    cudaMemset(dev_pos_x, 0, size);
+    cudaMemset(dev_pos_y, 0, size);
+    cudaMemset(dev_pos_z, 0, size);
+
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
+   
     
     printf("%i\n", NUM_PARTICLES);
     for(int k=0; k< NUM_PARTICLES; k++)
@@ -115,8 +131,13 @@ int main(int argc, char **argv)
  
     printf("%s\n", "distances");
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
+    {
        printf("%e ", h_dist[k]);
+       fprintf(output_dist, "%e \n", h_dist[k]);
+    }
     
+    fclose(output_dist);
+
     free(pos_x);
     free(pos_y);
     free(pos_z);
