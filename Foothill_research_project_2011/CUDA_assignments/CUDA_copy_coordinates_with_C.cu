@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+
+
 __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist)
 {
     float posx, posy, posz;
 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;   
-    int idx_dist = idx * (NUM_PART-1); 
+    int idx_dist = idx * (NUM_PART); 
     for(int i=0; i<NUM_PART; i++)
     {
         if(idx != i)
@@ -124,7 +127,9 @@ int main(int argc, char **argv)
 
     printf("\n%s\n", "distances");
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
-        printf("%f ", h_dist[k]);
+    {
+        printf("%e\n", h_dist[k]);
+    }
 
     free(pos_x);
     free(pos_y);
