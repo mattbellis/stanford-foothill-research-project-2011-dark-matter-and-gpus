@@ -6,18 +6,21 @@
 
 __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist)
 {
-   float posx, posy, posz;
  
    int idx = blockIdx.x * blockDim.x + threadIdx.x;   
-   int idx_dist = idx * (NUM_PART-1); 
-   for(int i=0; i<NUM_PART; i++)
+   int idx_dist = idx * NUM_PART; 
+
+   float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
+   float dist_x, dist_y, dist_z;
+;
+   for(int i=idx+1; i<NUM_PART; i++)
    {
       if(idx != i)
       {  
-         posx = x[idx] - x[i];
-         posy = y[idx] - y[i];
-         posz = z[idx] - z[i];
-         dist[idx_dist + i] = sqrt(posx * posx + posy * posy + posz * posz); 
+         dist_x = x_idx - x[i];
+         dist_y = y_idx - y[i];
+         dist_z = z_idx - z[i];
+         dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z); 
      }
    }
 }
@@ -116,24 +119,21 @@ int main(int argc, char **argv)
     cudaMemset(dev_pos_y, 0, size);
     cudaMemset(dev_pos_z, 0, size);
 
+    cudaMemset(dev_dist, 0, size*size);
+    
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
    
     
-    printf("%i\n", NUM_PARTICLES);
-    for(int k=0; k< NUM_PARTICLES; k++)
-       printf("%e ", pos_x[k]);    
-
     distance<<<block, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
  
     cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
  
-    printf("%s\n", "distances");
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
     {
-       printf("%e ", h_dist[k]);
-       fprintf(output_dist, "%e \n", h_dist[k]);
+       if(h_dist[k] > 0)
+         fprintf(output_dist, "%e \n", h_dist[k]);
     }
     
     fclose(output_dist);
