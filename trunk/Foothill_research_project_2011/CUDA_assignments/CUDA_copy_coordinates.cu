@@ -63,16 +63,17 @@ int main(int argc, char **argv)
     // Read in the cluster_data file
     ////////////////////////////////////////////////////////////////////////////
 
-    string axis_titles;
-  
-    string dummy;
+    
+//    char axis_titles[256];
+    char dummy;
 
-    if(infile.good())
+  
+  if(infile.good())
     {
         infile >> NUM_PARTICLES;
     
-        for(int m=0; m <3; m++)
-           infile >> axis_titles >> axis_titles;
+//        for(int m=0; m <3; m++)
+   //        infile >> axis_titles >> axis_titles;
 
     }
     else
@@ -81,14 +82,23 @@ int main(int argc, char **argv)
         exit(1);
     }
 
- 
+
+
+  //  fscanf(infile, "%d", &NUM_PARTICLES);
+  //  fscanf(infile, "%s %s %s %s", &axis_titles, &dummy, &axis_titles, &dummy);
+    
     int size = NUM_PARTICLES * sizeof(float);    
         
     pos_x = (float*)malloc(size);
     pos_y = (float*)malloc(size);
     pos_z = (float*)malloc(size);
     h_dist = (float *)malloc(size * size);
-   
+/*   
+    for(int i=0; i<NUM_PARTICLES; i++)
+    {
+        fscanf(infile, "%e %s %e %s %e %s", &pos_x[i], &dummy, &pos_y[i], &dummy, &pos_z[i], &dummy);
+    }
+*/
     for(int i=0; i<NUM_PARTICLES; i++)
     {
 
@@ -96,11 +106,10 @@ int main(int argc, char **argv)
        infile >> pos_y[i] >> dummy;
        infile >> pos_z[i] >> dummy;
     }
-
     ////////////////////////////////////////////////////////////////////////////
    
     dim3 grid,block;
-    block.x = 1;
+    block.x = 4;
     grid.x = NUM_PARTICLES/block.x;
  
    
@@ -129,6 +138,8 @@ int main(int argc, char **argv)
     distance<<<block, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
  
     cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
+
+    fprintf(output_dist, "%s %i \n", "GPU ", NUM_PARTICLES);
  
     for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
     {
