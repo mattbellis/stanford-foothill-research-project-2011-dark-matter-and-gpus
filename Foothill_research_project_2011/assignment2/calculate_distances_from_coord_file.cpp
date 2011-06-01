@@ -31,14 +31,13 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////////////
     infile >> NUM_PARTICLES;
     
-    string axis_titles;
-    for(int m=0; m <3; m++)
-       infile >> axis_titles >> axis_titles;
+  //  string axis_titles;
+  //  for(int m=0; m <3; m++)
+  //     infile >> axis_titles >> axis_titles;
 	 
     float pos[NUM_PARTICLES][3];
     
     string dummy;
-
     if(infile.good()) 
     {
         for(int i=0; i<NUM_PARTICLES; i++)
@@ -48,46 +47,48 @@ int main(int argc, char **argv)
             infile >> pos[i][1] >> dummy;
             infile >> pos[i][2] >> dummy;
         }
-
     } 
     else
     {
         cerr << "Couldn't open the file for input." << endl;
         exit(1);
     }
-    ////////////////////////////////////////////////////////////////////////////
-
+ ////////////////////////////////////////////////////////////////////////////
     float dist[NUM_PARTICLES][NUM_PARTICLES];
 
     // Zero out the values
     for (int i=0; i<NUM_PARTICLES; i++) 
     {
-       for(int j=0; j<NUM_PARTICLES; j++)
-          dist[i][j] = 0.0;
+        for(int j=0; j<NUM_PARTICLES; j++)
+           dist[i][j] = 0.0;
     }
-
     cout.setf(ios_base::scientific,ios::fixed);  
     cout.precision(4); 
-
+    
+    float posi0, posi1, posi2; 
+    
     int number_of_distances = 0; 
     
         for(int i=0; i<NUM_PARTICLES; i++)
         {
+            posi0 = pos[i][0];
+            posi1 = pos[i][1];
+            posi2 = pos[i][2];
+
             for(int j=0; j<NUM_PARTICLES; j++)
             {
                 if(i != j && i < j)
                 {
-                    x = pos[j][0] - pos[i][0];
-                    y = pos[j][1] - pos[i][1];
-                    z = pos[j][2] - pos[i][2];
-
+                    x = pos[j][0] - posi0;
+                    y = pos[j][1] - posi1;
+                    z = pos[j][2] - posi2;
                     dist[i][j] = sqrt( x*x + y*y + z*z);
                     
 		    number_of_distances++;
                 }
             }
         }
-     outfile_dist  <<  number_of_distances << endl; 
+    outfile_dist  <<  number_of_distances << endl; 
      
      for(int i=0; i<NUM_PARTICLES; i++)
      {
