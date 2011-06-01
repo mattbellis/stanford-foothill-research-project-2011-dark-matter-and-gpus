@@ -31,9 +31,9 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////////////
     infile >> NUM_PARTICLES;
     
-  //  string axis_titles;
-  //  for(int m=0; m <3; m++)
-  //     infile >> axis_titles >> axis_titles;
+//    string axis_titles;
+//  for(int m=0; m <3; m++)
+//   infile >> axis_titles >> axis_titles;
 	 
     float pos[NUM_PARTICLES][3];
     
@@ -77,6 +77,7 @@ int main(int argc, char **argv)
 
             for(int j=0; j<NUM_PARTICLES; j++)
             {
+        
                 if(i != j && i < j)
                 {
                     x = pos[j][0] - posi0;
@@ -88,7 +89,9 @@ int main(int argc, char **argv)
                 }
             }
         }
-    outfile_dist  <<  number_of_distances << endl; 
+
+     outfile_dist  << "CPU - " << NUM_PARTICLES << " particles" << endl; 
+     //outfile_dist  <<  number_of_distances << endl; 
      
      for(int i=0; i<NUM_PARTICLES; i++)
      {
@@ -96,6 +99,7 @@ int main(int argc, char **argv)
          {
             if(dist[i][j] != 0.0)
                 outfile_dist << dist[i][j] << endl;
+         
          }
      }
     outfile_dist.close();
