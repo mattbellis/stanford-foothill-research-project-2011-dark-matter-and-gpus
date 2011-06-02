@@ -48,15 +48,15 @@ int main(int argc, char **argv)
     FILE *infile;
     infile = fopen(argv[1],"r");
 
-    FILE *output_dist;
+   // FILE *output_dist;
 
-    output_dist = fopen(argv[2], "w");
+   // output_dist = fopen(argv[2], "w");
 
-    if(!output_dist)
-    {
-         perror("Error opening file");
-         return 1;
-    }
+   // if(!output_dist)
+   // {
+   //      perror("Error opening file");
+   //      return 1;
+   // }
 
     //////////////////////////////////////////////////////////////////////
     // Read in the cluster_data file
@@ -111,20 +111,20 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
 
-    distance<<<256, 28 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
+    distance<<<17, 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
 
     //cudaMemset(dev_dist,1.0,size*size);
     cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
     
-    fprintf(output_dist, "%s %i \n", "GPU ", NUM_PARTICLES);
+  //  fprintf(output_dist, "%s %i \n", "GPU ", NUM_PARTICLES);
 
-    for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
-    {
-       if(h_dist[k] > 0)
-         fprintf(output_dist, "%e \n", h_dist[k]);
-    }
+  //  for(int k=0; k< NUM_PARTICLES * NUM_PARTICLES; k++)
+  //  {
+  //     if(h_dist[k] > 0)
+  //       fprintf(output_dist, "%e \n", h_dist[k]);
+  //  }
 
-    fclose(output_dist);   
+  //  fclose(output_dist);   
 
     free(pos_x);
     free(pos_y);
