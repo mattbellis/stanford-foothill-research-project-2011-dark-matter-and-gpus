@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     float x = 0.0, y= 0.0, z = 0.0; 
     int NUM_PARTICLES;
 
-    if (argc < 3)     
+    if (argc < 2)     
     {
         cerr << endl;
         cerr << "Must pass in cluster_data file  on command line!" << endl;
@@ -28,15 +28,15 @@ int main(int argc, char **argv)
     FILE *infile;
     infile = fopen(argv[1],"r");
  
-    FILE *output_dist;
+//    FILE *output_dist;
+//
+ //   output_dist = fopen(argv[2], "w");
 
-    output_dist = fopen(argv[2], "w");
-
-    if(!output_dist)
-    {
-       perror("Error opening file");
-       return 1;
-    }
+ //   if(!output_dist)
+ //   {
+ //      perror("Error opening file");
+ //      return 1;
+ //   }
      
 
     ////////////////////////////////////////////////////////////////////////////
@@ -91,15 +91,15 @@ int main(int argc, char **argv)
                 }
             }
         }
-     fprintf(output_dist, "%s %i %s \n", "CPU ", NUM_PARTICLES, "particles");
+//     fprintf(output_dist, "%s %i %s \n", "CPU ", NUM_PARTICLES, "particles");
      
-     for(int i=0; i<NUM_PARTICLES * NUM_PARTICLES; i++)
-     {
-         if(dist[i] > 0.0)
-            fprintf(output_dist, "%e \n", dist[i]);
-     }
+  //   for(int i=0; i<NUM_PARTICLES * NUM_PARTICLES; i++)
+   //  {
+   //      if(dist[i] > 0.0)
+   //         fprintf(output_dist, "%e \n", dist[i]);
+   //  }
    
-    fclose(output_dist);
+  //  fclose(output_dist);
 
     free(pos_x);
     free(pos_y);
