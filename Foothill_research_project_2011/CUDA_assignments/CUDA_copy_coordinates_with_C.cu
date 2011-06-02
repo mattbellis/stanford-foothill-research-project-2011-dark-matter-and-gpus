@@ -18,7 +18,6 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
             posy = y[idx] - y[i];
             posz = z[idx] - z[i];
             dist[idx_dist + i] = sqrt(posx * posx + posy * posy + posz * posz); 
-            //dist[idx_dist + i] = 10.0;
         }
     }
 }

@@ -12,7 +12,7 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
 
    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
    float dist_x, dist_y, dist_z;
-;
+
    for(int i=idx+1; i<NUM_PART; i++)
    {
       if(idx != i)
@@ -109,7 +109,8 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////////////
    
     dim3 grid,block;
-    block.x = 4;
+    block.x = 1000;
+
     grid.x = NUM_PARTICLES/block.x;
  
    
@@ -135,7 +136,7 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
    
     
-    distance<<<block, NUM_PARTICLES >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
+    distance<<<block, grid>>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
  
     cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
 
