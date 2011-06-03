@@ -64,14 +64,14 @@ int main(int argc, char **argv)
        fscanf(infile, "%e %s %e %s %e %s", &pos_x[i], &dummy, &pos_y[i], &dummy, &pos_z[i], &dummy);
     
 
-    float *dist = (float*)malloc(size * size);
+//    float *dist = (float*)malloc(size * size);
 
     // Zero out the values
-    memset(dist, 0, size * size);
+//    memset(dist, 0, size * size);
 
    // cout.setf(ios_base::scientific,ios::fixed);  
    // cout.precision(4); 
-
+float dist;
     int number_of_distances = 0; 
     
         for(int i=0; i<NUM_PARTICLES; i++)
@@ -85,9 +85,11 @@ int main(int argc, char **argv)
                     y = pos_y[j] - pos_y[i];
                     z = pos_z[j] - pos_z[i];
 
-                    dist[ i*NUM_PARTICLES + j] = sqrt( x*x + y*y + z*z);
+
+                   dist = sqrt( x*x + y*y + z*z);
+                   // dist[ i*NUM_PARTICLES + j] = sqrt( x*x + y*y + z*z);
                     
-		    number_of_distances++;
+		   // number_of_distances++;
                 }
             }
         }
@@ -104,7 +106,7 @@ int main(int argc, char **argv)
     free(pos_x);
     free(pos_y);
     free(pos_z);
-    free(dist);
+//    free(dist);
 
     return 0;
 }
