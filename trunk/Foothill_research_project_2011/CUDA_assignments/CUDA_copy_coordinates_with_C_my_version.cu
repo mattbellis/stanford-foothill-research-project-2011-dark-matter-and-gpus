@@ -4,14 +4,14 @@
 #include<cstdlib>
 #include<fstream>
 
-__global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist)
+__global__ void distance(float *x, float *y, float *z, int NUM_PART)//, float *dist)
 {
 
    int idx = blockIdx.x * blockDim.x + threadIdx.x;
    int idx_dist = idx * NUM_PART;
 
    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
-   float dist_x, dist_y, dist_z;
+   float dist_x, dist_y, dist_z, dist;
 
    for(int i=idx+1; i<NUM_PART; i++)
    {
@@ -20,7 +20,9 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART, float *dist
          dist_x = x_idx - x[i];
          dist_y = y_idx - y[i];
          dist_z = z_idx - z[i];
-         dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
+
+         dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
+//         dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
      }
    }
 }
@@ -90,10 +92,10 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_x, size );
     cudaMalloc((void **) &dev_pos_y, size );
     cudaMalloc((void **) &dev_pos_z, size );
-    cudaMalloc((void **) &dev_dist, size * size);
+  //  cudaMalloc((void **) &dev_dist, size * size);
 
     // Check to see if we allocated enough memory.
-    if (0==dev_pos_z || 0==dev_pos_y|| 0==dev_pos_x)
+    if (0==dev_pos_z || 0==dev_pos_y|| 0==dev_pos_x)// || 0==dev_dist)
     {
         printf("couldn't allocate memory\n");
         return 1;
@@ -104,17 +106,17 @@ int main(int argc, char **argv)
     cudaMemset(dev_pos_x,0,size);
     cudaMemset(dev_pos_z,0,size);
     cudaMemset(dev_pos_y,0,size);
-    cudaMemset(dev_dist,0,size*size);
+   // cudaMemset(dev_dist,0,size*size);
 
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
 
-    distance<<<17, 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES, dev_dist);
+    distance<<<16, 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES);//, dev_dist);
 
     //cudaMemset(dev_dist,1.0,size*size);
-    cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
+   // cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
     
   //  fprintf(output_dist, "%s %i \n", "GPU ", NUM_PARTICLES);
 
