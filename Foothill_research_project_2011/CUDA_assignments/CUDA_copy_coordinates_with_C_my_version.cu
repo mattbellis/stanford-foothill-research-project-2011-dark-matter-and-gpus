@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
 
-    distance<<<16, 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES);//, dev_dist);
+    distance<<<128 , 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES);//, dev_dist);
 
     //cudaMemset(dev_dist,1.0,size*size);
    // cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
