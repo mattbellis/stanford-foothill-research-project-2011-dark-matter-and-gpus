@@ -1,8 +1,8 @@
-#include<iostream>
-#include<sstream>
-#include<string>
-#include<cstdlib>
-#include<fstream>
+#include<stdio.h>
+//nclude<sstream>
+#include<string.h>
+#include<stdlib.h>
+//nclude<fstream>
 
 __global__ void distance(float *x, float *y, float *z, int NUM_PART)//, float *dist)
 {
@@ -20,7 +20,7 @@ __global__ void distance(float *x, float *y, float *z, int NUM_PART)//, float *d
          dist_x = x_idx - x[i];
          dist_y = y_idx - y[i];
          dist_z = z_idx - z[i];
-
+         
          dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
 //         dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
      }
@@ -84,9 +84,9 @@ int main(int argc, char **argv)
 
     ////////////////////////////////////////////////////////////////////////////
 
-    dim3 grid,block;
+    dim3 grid, block;
     block.x = 512;
-    grid.x = NUM_PARTICLES/block.x;
+    grid.x = 127; //NUM_PARTICLES/block.x;
 
 
     cudaMalloc((void **) &dev_pos_x, size );
