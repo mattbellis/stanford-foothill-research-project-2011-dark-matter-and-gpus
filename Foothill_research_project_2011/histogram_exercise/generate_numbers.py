@@ -6,7 +6,7 @@ import random
 num_entries = int(sys.argv[1])
 
 lo = 0.0
-hi = 10.0
+hi = 11.0
 
 num_range = hi - lo
 
