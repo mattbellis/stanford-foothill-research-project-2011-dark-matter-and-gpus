@@ -112,15 +112,16 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
-   int x =0, y=0;
-   int block_num = NUM_PARTICLES/512;
+   int x, y;
+   int block_num = NUM_PARTICLES / block.x;
 
    for(int k = 0; k < block_num; k++)
+   {
+      y = k* block.x;
       for(int j = 0; j < block_num; j++)
       {
          { 
             x = j * block.x; 
-            y = k * block.x;
             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y);//, dev_dist);
          }
       }
