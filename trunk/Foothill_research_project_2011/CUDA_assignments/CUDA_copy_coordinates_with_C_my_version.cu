@@ -79,6 +79,7 @@ int main(int argc, char **argv)
   //  fscanf(infile, "%s %s %s %s", &axis_titles, &dummy, &axis_titles, &dummy);
 
     int size = NUM_PARTICLES * sizeof(float);    
+    printf("# particles: %d\n",NUM_PARTICLES);
 
     pos_x = (float*)malloc(size);
     pos_y = (float*)malloc(size);
@@ -88,6 +89,7 @@ int main(int argc, char **argv)
     for(int i=0; i<NUM_PARTICLES; i++)
     {
         fscanf(infile, "%e %s %e %s %e %s", &pos_x[i], &dummy, &pos_y[i], &dummy, &pos_z[i], &dummy);
+        //printf("%e %s %e %s %e %s\n", pos_x[i], dummy, pos_y[i], dummy, pos_z[i], dummy);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -121,6 +123,7 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_x, pos_x, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
+    cudaMemcpy(dev_dist, h_dist, size * size, cudaMemcpyHostToDevice );
 
    int x, y;
    int num_submatrices = NUM_PARTICLES / SUBMATRIX_SIZE;
