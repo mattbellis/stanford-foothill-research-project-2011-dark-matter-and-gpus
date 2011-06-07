@@ -1,20 +1,27 @@
 #include<stdio.h>
-//nclude<sstream>
 #include<string.h>
 #include<stdlib.h>
-//nclude<fstream>
 
+using namespace std;
+
+#define SUBMATRIX_SIZE 3000
+
+////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind)// float *dist)
 {
 
 
-   int idx = xind * blockDim.x + yind;
- //  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-//   int idx_dist = idx * NUM_PART;
+   //int idx = xind * blockDim.x + yind;
+   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+   idx += xind;
+
    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
    float dist_x, dist_y, dist_z, dist;
 
-   for(int i=idx+1; i<blockDim.x; i++)
+   //int max = SUBMATRIX_SIZE*
+
+    int ymax = yind + SUBMATRIX_SIZE;
+   for(int i=yind; i<ymax; i++)
    {
       if(idx != i)
       {
@@ -27,8 +34,9 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind)// flo
    }
 }
 
-using namespace std;
+////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
 
@@ -83,10 +91,12 @@ int main(int argc, char **argv)
     }
 
     ////////////////////////////////////////////////////////////////////////////
-
+    // Define the grid and block size
+    ////////////////////////////////////////////////////////////////////////////
     dim3 grid, block;
-    block.x = 512;
-    grid.x = 127; //NUM_PARTICLES/block.x;
+    block.x = 100;
+    grid.x = SUBMATRIX_SIZE/block.x; //NUM_PARTICLES/block.x;
+    ////////////////////////////////////////////////////////////////////////////
 
 
     cudaMalloc((void **) &dev_pos_x, size );
@@ -113,15 +123,16 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
    int x, y;
-   int block_num = NUM_PARTICLES / block.x;
+   int num_submatrices = NUM_PARTICLES / SUBMATRIX_SIZE;
 
-   for(int k = 0; k < block_num; k++)
+   for(int k = 0; k < num_submatrices; k++)
    {
-      y = k* block.x;
-      for(int j = 0; j < block_num; j++)
+      y = k*SUBMATRIX_SIZE;
+      for(int j = 0; j < num_submatrices; j++)
       {
          { 
-            x = j * block.x; 
+            x = j *SUBMATRIX_SIZE; 
+            printf("x: %d\ty: %d\n",x,y);
             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y);//, dev_dist);
          }
       }
@@ -149,3 +160,4 @@ int main(int argc, char **argv)
 
     return 0;
 }  
+////////////////////////////////////////////////////////////////////////
