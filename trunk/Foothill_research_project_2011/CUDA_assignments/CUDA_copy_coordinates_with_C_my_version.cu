@@ -4,23 +4,23 @@
 #include<stdlib.h>
 //nclude<fstream>
 
-__global__ void distance(float *x, float *y, float *z, int NUM_PART)//, float *dist)
+__global__ void distance(float *x, float *y, float *z, int xind, int yind)// float *dist)
 {
 
-   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-   int idx_dist = idx * NUM_PART;
 
+   int idx = xind * blockDim.x + yind;
+ //  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+//   int idx_dist = idx * NUM_PART;
    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
    float dist_x, dist_y, dist_z, dist;
 
-   for(int i=idx+1; i<NUM_PART; i++)
+   for(int i=idx+1; i<blockDim.x; i++)
    {
       if(idx != i)
       {
          dist_x = x_idx - x[i];
          dist_y = y_idx - y[i];
          dist_z = z_idx - z[i];
-         
          dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
 //         dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
      }
@@ -112,9 +112,18 @@ int main(int argc, char **argv)
     cudaMemcpy(dev_pos_y, pos_y, size, cudaMemcpyHostToDevice );
     cudaMemcpy(dev_pos_z, pos_z, size, cudaMemcpyHostToDevice );
 
+   int x =0, y=0;
+   int block_num = NUM_PARTICLES/512;
 
-    distance<<<128 , 512 >>>(dev_pos_x, dev_pos_y, dev_pos_z, NUM_PARTICLES);//, dev_dist);
-
+   for(int k = 0; k < block_num; k++)
+      for(int j = 0; j < block_num; j++)
+      {
+         { 
+            x = j * block.x; 
+            y = k * block.x;
+            distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y);//, dev_dist);
+         }
+      }
     //cudaMemset(dev_dist,1.0,size*size);
    // cudaMemcpy(h_dist, dev_dist, size * size, cudaMemcpyDeviceToHost );
     
