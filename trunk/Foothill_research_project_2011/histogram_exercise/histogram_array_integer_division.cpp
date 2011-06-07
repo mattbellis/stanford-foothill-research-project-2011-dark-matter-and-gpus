@@ -40,6 +40,7 @@ int main(int argc, char **argv)
     float bin_limit_lo = 0.0;
     float bin_limit_hi = 1.0;
     float bin_width = (MAX-MIN)/N;
+    int bin_index = 0;
 
     // Zero out the values
     for (int i=0; i<N+2; i++) 
@@ -55,29 +56,20 @@ int main(int argc, char **argv)
         for(int i=0; i<NUM_COUNT; i++)
         {
             infile >> number;
-            if(number >= MIN || number < MAX)
-            {    
-                for(int j=0; j<N+1; j++)
-                {
-                bin_limit_lo = j*bin_width;
-                bin_limit_hi = (j+1)*bin_width;
-                    if(number >= bin_limit_lo && number < bin_limit_hi)
-                    {
-                        //bin_array[j+1] = number;
-                        count_array[j+1]++;
-                        break;
-                    }
-                }
-                continue;
+            if (number>=MAX)
+            {
+                bin_index = N+1;
             }
-            else 
-                if(number >= MAX)
-                {
-                    //bin_array[N+1] = number;
-                    count_array[N+1]++;
-                }
-            //bin_array[0] = number;
-            count_array[0]++;
+            else if (number<MIN)
+            {
+                bin_index = 0;
+            }
+            else
+            {
+                bin_index = int(((number-MIN)*N)/MAX) + 1;
+            }
+            //cerr << number << " " << bin_index << endl;
+            count_array[bin_index]++;
 
         }
     } 
