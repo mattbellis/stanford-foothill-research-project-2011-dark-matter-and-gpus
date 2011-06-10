@@ -5,9 +5,9 @@
 using namespace std;
 
 #define SUBMATRIX_SIZE 3000
-
+#define BIN_COUNT 10
 ////////////////////////////////////////////////////////////////////////
-__global__ void distance(float *x, float *y, float *z, int xind, int yind)// float *dist)
+__global__ void distance(float *x, float *y, float *z, int xind, int yind, float hist)// float *dist)
 {
 
 
@@ -18,6 +18,10 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind)// flo
    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
    float dist_x, dist_y, dist_z, dist;
 
+   float histogram[BIN_COUNT];
+
+   for(int k=0; k<BINCOUNT; k++)
+      histogram[k] = 0;
    //int max = SUBMATRIX_SIZE*
 
     int ymax = yind + SUBMATRIX_SIZE;
@@ -58,15 +62,6 @@ int main(int argc, char **argv)
     FILE *infile;
     infile = fopen(argv[1],"r");
 
-   // FILE *output_dist;
-
-   // output_dist = fopen(argv[2], "w");
-
-   // if(!output_dist)
-   // {
-   //      perror("Error opening file");
-   //      return 1;
-   // }
 
     //////////////////////////////////////////////////////////////////////
     // Read in the cluster_data file
@@ -91,6 +86,17 @@ int main(int argc, char **argv)
         fscanf(infile, "%e %s %e %s %e %s", &pos_x[i], &dummy, &pos_y[i], &dummy, &pos_z[i], &dummy);
         //printf("%e %s %e %s %e %s\n", pos_x[i], dummy, pos_y[i], dummy, pos_z[i], dummy);
     }
+    
+    ////////////////////////////////////////////////////////////////////////////
+    //define histogram
+    ////////////////////////////////////////////////////////////////////////////
+    float *histogram;
+ 
+    histogram = (float*)malloc(sizeof(float) * BIN_COUNT);
+    
+    memset(histogram, 0, sizeof(float) * BINCOUNT);
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Define the grid and block size
@@ -135,7 +141,7 @@ int main(int argc, char **argv)
       {
          { 
             x = j *SUBMATRIX_SIZE; 
-            printf("x: %d\ty: %d\n",x,y);
+        //    printf("x: %d\ty: %d\n",x,y);
             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y);//, dev_dist);
          }
       }
