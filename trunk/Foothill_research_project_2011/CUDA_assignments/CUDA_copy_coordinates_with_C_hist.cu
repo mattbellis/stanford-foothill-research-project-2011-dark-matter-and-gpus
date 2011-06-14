@@ -4,10 +4,10 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 3000
-#define NUM_BIN 100
+#define SUBMATRIX_SIZE 100
+#define NUM_BIN 10
 #define MIN 0.0
-#define MAX 3e9  
+#define MAX 1000.0  
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
@@ -24,7 +24,7 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
    //int max = SUBMATRIX_SIZE*
 
    int ymax = yind + SUBMATRIX_SIZE;
-   int bin_index = idx * (NUM_BIN + 1) + idx; 
+   int bin_index,  bin = idx * (NUM_BIN + 1) + idx; 
 
    for(int i=yind; i<ymax; i++)
    {
@@ -36,11 +36,11 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
          dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
 
          if(dist < MIN)
-            ; 
+            bin_index = bin; 
          else if(dist >= MAX)
-            bin_index += NUM_BIN + 1;
+            bin_index = bin + NUM_BIN + 1;
          else
-            bin_index += int(((dist - MIN) * NUM_BIN / MAX) +1);    
+            bin_index = bin + int(((dist - MIN) * NUM_BIN / MAX) +1);    
    
          dev_hist[bin_index]++;
 
@@ -104,13 +104,10 @@ int main(int argc, char **argv)
     int size_hist = SUBMATRIX_SIZE * (NUM_BIN+2);
 
     hist = (int*)malloc(size_hist * sizeof(int));
-
     memset(hist, 0, size_hist);
-
     cudaMalloc((void **) &dev_hist, size_hist);
     
     cudaMemset(dev_hist, 0, size_hist);
-  
   
     int hist_array[NUM_BIN+2];
   
@@ -130,7 +127,7 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_pos_z, size );
 
     // Check to see if we allocated enough memory.
-    if (0==dev_pos_z || 0==dev_pos_y|| 0==dev_pos_x || dev_hist)// || 0==dev_dist)
+    if (0==dev_pos_z || 0==dev_pos_y|| 0==dev_pos_x || 0==dev_hist)
     {
         printf("couldn't allocate memory\n");
         return 1;
@@ -158,18 +155,19 @@ int main(int argc, char **argv)
              x = j *SUBMATRIX_SIZE; 
              //    printf("x: %d\ty: %d\n",x,y);
              distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y, dev_hist);
+
           }
        }
     }
 
     cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
-
+printf("%i \n\n", hist[45]); 
     for(int j=0; j<NUM_BIN+2; j++)
-       for(int i=0; i<size_hist; i++)
-          hist_array[j] += hist[i*(NUM_BIN+1) + i];
+ //      for(int i=0; i<size_hist; i++)
+          hist_array[j] += hist[j*(10) + 2];
 
     for(int k=0; k<NUM_BIN+2; k++)
-       printf(" \n", hist_array[k]);
+       printf("%i \n", hist_array[k]);
 
     free(pos_x);
     free(pos_y);
@@ -183,4 +181,4 @@ int main(int argc, char **argv)
 
     return 0;
 }  
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
