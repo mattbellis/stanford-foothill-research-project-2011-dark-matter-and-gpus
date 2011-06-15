@@ -7,7 +7,7 @@ using namespace std;
 #define SUBMATRIX_SIZE 100
 #define NUM_BIN 10
 #define MIN 0.0
-#define MAX 1000.0  
+#define MAX 3e10.0  
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
@@ -24,7 +24,7 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
    //int max = SUBMATRIX_SIZE*
 
    int ymax = yind + SUBMATRIX_SIZE;
-   int bin_index,  bin = idx * (NUM_BIN + 1) + idx; 
+   int bin_index=0,  bin = idx * (NUM_BIN + 1) + idx; 
 
    for(int i=yind; i<ymax; i++)
    {
@@ -44,7 +44,6 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
    
          dev_hist[bin_index]++;
 
-        // dist[idx_dist + i] = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
      }
    }
 }
@@ -95,7 +94,6 @@ int main(int argc, char **argv)
         fscanf(infile, "%e %s %e %s %e %s", &pos_x[i], &dummy, &pos_y[i], &dummy, &pos_z[i], &dummy);
         //printf("%e %s %e %s %e %s\n", pos_x[i], dummy, pos_y[i], dummy, pos_z[i], dummy);
     }
-    
     ////////////////////////////////////////////////////////////////////////////
     //allocation of histogram
     ///////////////////////////////////////////////////////////////////////////
@@ -146,6 +144,7 @@ int main(int argc, char **argv)
     int x, y;
     int num_submatrices = NUM_PARTICLES / SUBMATRIX_SIZE;
 
+
     for(int k = 0; k < num_submatrices; k++)
     {
        y = k*SUBMATRIX_SIZE;
@@ -153,18 +152,21 @@ int main(int argc, char **argv)
        {
           { 
              x = j *SUBMATRIX_SIZE; 
-             //    printf("x: %d\ty: %d\n",x,y);
-             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y, dev_hist);
+
+             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, 0, 0, dev_hist);
+
+               cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
+printf("%i \n\n", hist[0]);
+
 
           }
        }
     }
 
-    cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
-printf("%i \n\n", hist[45]); 
+   // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
     for(int j=0; j<NUM_BIN+2; j++)
  //      for(int i=0; i<size_hist; i++)
-          hist_array[j] += hist[j*(10) + 2];
+          hist_array[j] += hist[j*(NUM_BIN) + 2];
 
     for(int k=0; k<NUM_BIN+2; k++)
        printf("%i \n", hist_array[k]);
