@@ -158,9 +158,9 @@ int main(int argc, char **argv)
              distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, 0, 0, dev_hist);
                cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
 
-for(int m=0; m<size_hist+1; m++)
+for(int m=0; m<size_hist; m++)
 {
-   if((m%11) == 0)
+   if((m%12) == 0)
      printf("\n");
 
    printf("%i ", hist[m]);
@@ -174,7 +174,7 @@ printf("\n");
 */
    // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
     for(int j=0; j<NUM_BIN+2; j++)
-      for(int i=0; i<size_hist; i++)
+      for(int i=0; i<SUBMATRIX_SIZE; i++)
           hist_array[j] += hist[i*(NUM_BIN + 2)+j];
 
     for(int k=0; k<NUM_BIN+2; k++)
