@@ -7,7 +7,7 @@ using namespace std;
 #define SUBMATRIX_SIZE 10
 #define NUM_BIN 10
 #define MIN 0.0
-#define MAX 1000.0  
+#define MAX 100.0  
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
