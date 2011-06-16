@@ -4,10 +4,10 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 100
+#define SUBMATRIX_SIZE 10
 #define NUM_BIN 10
 #define MIN 0.0
-#define MAX 100.0  
+#define MAX 1000.0  
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
@@ -24,7 +24,7 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
    //int max = SUBMATRIX_SIZE*
 
    int ymax = yind + SUBMATRIX_SIZE;
-   int bin_index=0,  bin = idx * (NUM_BIN + 2); 
+   int bin_index,  bin = idx * (NUM_BIN + 2); 
 
    for(int i=yind; i<ymax; i++)
    {
@@ -109,16 +109,16 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_hist, size_hist);
     cudaMemset(dev_hist, 0, size_hist);
   
-    int hist_array[NUM_BIN+2];
-
-    for(int i = 0; i< NUM_BIN+2; i++)
-       hist_array[i] = 0;
-
+    int *hist_array;
+   
+    hist_array =  (int*)malloc((NUM_BIN+2) * sizeof(int));
+    memset(hist_array, 0, (NUM_BIN+2)); 
+    
     ////////////////////////////////////////////////////////////////////////////
     // Define the grid and block size
     ////////////////////////////////////////////////////////////////////////////
     dim3 grid, block;
-    block.x = 100;
+    block.x = 10;
     grid.x = SUBMATRIX_SIZE/block.x; //NUM_PARTICLES/block.x;
     ////////////////////////////////////////////////////////////////////////////
 
@@ -157,8 +157,14 @@ int main(int argc, char **argv)
 */
              distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, 0, 0, dev_hist);
                cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
-for(int m=0; m<size_hist; m++)
-printf("%i ", hist[m]);
+
+for(int m=0; m<size_hist+1; m++)
+{
+   if((m%11) == 0)
+     printf("\n");
+
+   printf("%i ", hist[m]);
+}    
 printf("\n");
 
 /*
