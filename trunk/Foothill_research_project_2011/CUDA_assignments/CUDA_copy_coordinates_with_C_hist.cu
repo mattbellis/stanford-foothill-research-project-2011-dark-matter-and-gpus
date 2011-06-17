@@ -4,47 +4,71 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 100
+#define SUBMATRIX_SIZE 10
 #define NUM_BIN 10
 #define MIN 0.0
-#define MAX 100.0  
+#define MAX 35.0  
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
 {
 
 
-   //int idx = xind * blockDim.x + yind;
-   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-   idx += xind;
+    //int idx = xind * blockDim.x + yind;
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int thread_idx = idx;
+    idx += xind;
 
-   float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
-   float dist_x, dist_y, dist_z, dist;
-   
-   //int max = SUBMATRIX_SIZE*
+    float x_idx = x[idx], y_idx =y[idx], z_idx = z[idx];
+    float dist_x, dist_y, dist_z, dist;
 
-   int ymax = yind + SUBMATRIX_SIZE;
-   int bin_index,  bin = idx * (NUM_BIN + 2); 
+    //int max = SUBMATRIX_SIZE*
 
-   for(int i=yind; i<ymax; i++)
-   {
-      if(idx != i)
-      {
-         dist_x = x_idx - x[i];
-         dist_y = y_idx - y[i];
-         dist_z = z_idx - z[i];
-         dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
-         if(dist < MIN)
-            bin_index = bin; 
-         else if(dist >= MAX)
-            bin_index = bin + NUM_BIN + 1;
-         else
-            bin_index = bin + int(((dist - MIN) * NUM_BIN / MAX) +1);    
-   
-         dev_hist[bin_index]++;
+    int ymax = yind + SUBMATRIX_SIZE;
+    int bin_index,  bin = idx * (NUM_BIN + 2); 
+    int offset = 0;
 
-     }
-   }
+    /*
+    for(int i=yind; i<ymax; i++)
+    {
+        if(idx != i)
+        {
+            dist_x = x_idx - x[i];
+            dist_y = y_idx - y[i];
+            dist_z = z_idx - z[i];
+            dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
+            if(dist < MIN)
+                bin_index = 0; 
+            else if(dist >= MAX)
+                bin_index = NUM_BIN + 1;
+            else
+                //bin_index = int(((dist - MIN) * NUM_BIN / MAX) +1);    
+                bin_index = 5;
+
+            //dev_hist[bin_index]++;
+
+            offset = ((NUM_BIN+2)*thread_idx);
+            bin_index += offset;
+
+           //dev_hist[i] = xind;
+           //dev_hist[i+idx] = idx;
+           //dev_hist[bin_index]++;
+           dev_hist[0+offset] = blockDim.x;
+           dev_hist[1+offset] = blockIdx.x;
+           dev_hist[2+offset] = threadIdx.x;
+           dev_hist[3+offset] = thread_idx;
+           dev_hist[4+offset] = idx;
+           dev_hist[5+offset] = yind;
+           dev_hist[6+offset] = ymax;
+        }
+    }
+    */
+    //dev_hist[0 + (threadIdx.x*12)] = threadIdx.x;
+    for (int i=0;i<10;i++)
+    {
+        offset = threadIdx.x*12;
+        dev_hist[threadIdx.x+offset] = threadIdx.x;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -105,18 +129,18 @@ int main(int argc, char **argv)
 
     cudaMalloc((void **) &dev_hist, size_hist);
     cudaMemset(dev_hist, 0, size_hist);
-  
+
     int *hist_array;
-   
+
     hist_array =  (int*)malloc((NUM_BIN+2) * sizeof(int));
     memset(hist_array, 0, (NUM_BIN+2)); 
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // Define the grid and block size
     ////////////////////////////////////////////////////////////////////////////
     dim3 grid, block;
-    block.x = 10;
-    grid.x = SUBMATRIX_SIZE/block.x; //NUM_PARTICLES/block.x;
+    grid.x = 1;
+    block.x = SUBMATRIX_SIZE/grid.x; //NUM_PARTICLES/block.x;
     ////////////////////////////////////////////////////////////////////////////
 
     cudaMalloc((void **) &dev_pos_x, size );
@@ -144,39 +168,47 @@ int main(int argc, char **argv)
     int num_submatrices = NUM_PARTICLES / SUBMATRIX_SIZE;
 
 
-   for(int k = 0; k < num_submatrices; k++)
+    for(int k = 0; k < num_submatrices; k++)
     {
-       y = k*SUBMATRIX_SIZE;
-       for(int j = 0; j < num_submatrices; j++)
-       {
-          { 
-             x = j *SUBMATRIX_SIZE; 
+        y = k*SUBMATRIX_SIZE;
+        for(int j = 0; j < num_submatrices; j++)
+        {
+                x = j *SUBMATRIX_SIZE; 
 
-             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y, dev_hist);
-               cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
+                printf("----\n");
+                printf("%d %d\t\t%d %d\n",k,y,j,x);
+                printf("----\n");
 
+                cudaMemset(dev_hist,0,size_hist);
 
-for(int m=0; m<size_hist; m++)
-{
-   if((m%12) == 0)
-     printf("\n");
-
-   printf("%i ", hist[m]);
-}    
-printf("\n");
+                distance<<<grid,block>>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y, dev_hist);
+                cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
 
 
-          }
-       }
+                for(int m=0; m<size_hist; m++)
+                {
+                    if((m%12) == 0)
+                        printf("\n");
+
+                    //printf("%3i:%3i ", m, hist[m]);
+                    printf("%3i ", hist[m]);
+                }    
+                printf("\n");
+        }
     }
 
-   // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
+    // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
     for(int j=0; j<NUM_BIN+2; j++)
-      for(int i=0; i<SUBMATRIX_SIZE; i++)
-          hist_array[j] += hist[i*(NUM_BIN + 2)+j];
+        for(int i=0; i<SUBMATRIX_SIZE; i++)
+            hist_array[j] += hist[i*(NUM_BIN + 2)+j];
 
+    int total = 0;
     for(int k=0; k<NUM_BIN+2; k++)
-       printf("%i \n", hist_array[k]);
+    {
+        printf("%i \n", hist_array[k]);
+        total += hist_array[k];
+    }
+    printf("total: %i \n", total);
 
     free(pos_x);
     free(pos_y);
