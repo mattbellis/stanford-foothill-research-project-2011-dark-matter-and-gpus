@@ -4,10 +4,10 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 10
+#define SUBMATRIX_SIZE 1000
 #define NUM_BIN 100
 #define HIST_MIN 0.0
-#define HIST_MAX 35.0  
+#define HIST_MAX 3e9
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *dev_hist)
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     // Define the grid and block size
     ////////////////////////////////////////////////////////////////////////////
     dim3 grid, block;
-    grid.x = 1;
+    grid.x = 10;
     block.x = SUBMATRIX_SIZE/grid.x; //NUM_PARTICLES/block.x;
     ////////////////////////////////////////////////////////////////////////////
 
@@ -179,13 +179,14 @@ int main(int argc, char **argv)
     for(int k = 0; k < num_submatrices; k++)
     {
         y = k*SUBMATRIX_SIZE;
+        printf("%d %d\n",k,y);
         for(int j = 0; j < num_submatrices; j++)
         {
                 x = j *SUBMATRIX_SIZE; 
 
-                printf("----\n");
-                printf("%d %d\t\t%d %d\n",k,y,j,x);
-                printf("----\n");
+                //printf("----\n");
+                //printf("%d %d\t\t%d %d\n",k,y,j,x);
+                //printf("----\n");
 
                 cudaMemset(dev_hist,0,size_hist_bytes);
 
@@ -197,15 +198,15 @@ int main(int argc, char **argv)
                 {
 
                     bin_index = m%(NUM_BIN+2);
-                    if(bin_index == 0)
-                        printf("\n");
+                    //if(bin_index == 0)
+                        //printf("\n");
 
                     //printf("%3i:%3i ", m, hist[m]);
-                    printf("%3i ", hist[m]);
+                    //printf("%3i ", hist[m]);
 
                     hist_array[bin_index] += hist[m];
                 }    
-                printf("\n");
+                //printf("\n");
 
         }
     }
