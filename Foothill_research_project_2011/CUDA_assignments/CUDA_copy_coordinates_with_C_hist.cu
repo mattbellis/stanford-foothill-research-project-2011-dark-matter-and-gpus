@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 10
+#define SUBMATRIX_SIZE 100
 #define NUM_BIN 10
 #define MIN 0.0
 #define MAX 100.0  
@@ -34,7 +34,6 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
          dist_y = y_idx - y[i];
          dist_z = z_idx - z[i];
          dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
-
          if(dist < MIN)
             bin_index = bin; 
          else if(dist >= MAX)
@@ -44,8 +43,6 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
    
          dev_hist[bin_index]++;
 
-//for(int i=0; i<100; i++)
-//dev_hist[i] =1;
      }
    }
 }
@@ -147,16 +144,17 @@ int main(int argc, char **argv)
     int num_submatrices = NUM_PARTICLES / SUBMATRIX_SIZE;
 
 
- /*   for(int k = 0; k < num_submatrices; k++)
+   for(int k = 0; k < num_submatrices; k++)
     {
        y = k*SUBMATRIX_SIZE;
        for(int j = 0; j < num_submatrices; j++)
        {
           { 
              x = j *SUBMATRIX_SIZE; 
-*/
-             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, 0, 0, dev_hist);
+
+             distance<<<grid, block >>>(dev_pos_x, dev_pos_y, dev_pos_z, x, y, dev_hist);
                cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
+
 
 for(int m=0; m<size_hist; m++)
 {
@@ -167,11 +165,11 @@ for(int m=0; m<size_hist; m++)
 }    
 printf("\n");
 
-/*
+
           }
        }
     }
-*/
+
    // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
     for(int j=0; j<NUM_BIN+2; j++)
       for(int i=0; i<SUBMATRIX_SIZE; i++)
