@@ -218,13 +218,13 @@ int main(int argc, char **argv)
             hist_array[j] += hist[i*(NUM_BIN + 2)+j];
     */
 
-    int total = 0;
+    unsigned long total = 0;
     for(int k=0; k<NUM_BIN+2; k++)
     {
         printf("%i \n", hist_array[k]);
         total += hist_array[k];
     }
-    printf("total: %i \n", total);
+    printf("total: %lu \n", total);
 
     free(pos_x);
     free(pos_y);
