@@ -25,7 +25,7 @@ __global__ void distance(float *x, float *y, float *z, int xind, int yind, int *
     //int max = SUBMATRIX_SIZE*
 
     int ymax = yind + SUBMATRIX_SIZE;
-    int bin_index,  bin = idx * (NUM_BIN + 2); 
+    int bin_index; 
     int offset = 0;
 
     for(int i=yind; i<ymax; i++)
