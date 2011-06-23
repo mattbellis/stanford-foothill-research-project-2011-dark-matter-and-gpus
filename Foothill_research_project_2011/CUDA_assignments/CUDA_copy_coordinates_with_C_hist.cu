@@ -137,10 +137,10 @@ int main(int argc, char **argv)
     cudaMalloc((void **) &dev_hist, (size_hist_bytes));
     cudaMemset(dev_hist, 0, size_hist_bytes);
 
-    int *hist_array;
+    unsigned long  *hist_array;
 
-    hist_array =  (int*)malloc((NUM_BIN+2) * sizeof(int));
-    memset(hist_array, 0, (NUM_BIN+2)*sizeof(int)); 
+    hist_array =  (unsigned long*)malloc((NUM_BIN+2) * sizeof(unsigned long));
+    memset(hist_array, 0, (NUM_BIN+2)*sizeof(unsigned long)); 
 
     ////////////////////////////////////////////////////////////////////////////
     // Define the grid and block size
