@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 1000
+#define SUBMATRIX_SIZE 50000
 #define NUM_BIN 100
 #define HIST_MIN 0.0
 #define HIST_MAX 3e9
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     // Define the grid and block size
     ////////////////////////////////////////////////////////////////////////////
     dim3 grid, block;
-    grid.x = 10;
+    grid.x =100;
     block.x = SUBMATRIX_SIZE/grid.x; //NUM_PARTICLES/block.x;
     ////////////////////////////////////////////////////////////////////////////
 
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     for(int k = 0; k < num_submatrices; k++)
     {
         y = k*SUBMATRIX_SIZE;
-        printf("%d %d\n",k,y);
+//        printf("%d %d\n",k,y);
         for(int j = 0; j < num_submatrices; j++)
         {
                 x = j *SUBMATRIX_SIZE; 
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
     unsigned long total = 0;
     for(int k=0; k<NUM_BIN+2; k++)
     {
-        printf("%i \n", hist_array[k]);
+       printf("%i \n", hist_array[k]);
         total += hist_array[k];
     }
     printf("total: %lu \n", total);
