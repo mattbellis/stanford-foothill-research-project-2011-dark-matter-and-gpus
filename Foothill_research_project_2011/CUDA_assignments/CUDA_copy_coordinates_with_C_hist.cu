@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
     int NUM_PARTICLES;
 
-    if (argc < 2)
+    if (argc < 3)
     {
 
         printf("\nMust pass in cluster_data file  on command line!\n");
@@ -96,9 +96,9 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    FILE *infile;
+    FILE *infile, *outfile;
     infile = fopen(argv[1],"r");
-
+    outfile = fopen(argv[2], "w");
 
     //////////////////////////////////////////////////////////////////////
     // Read in the cluster_data file
@@ -221,10 +221,13 @@ int main(int argc, char **argv)
     unsigned long total = 0;
     for(int k=0; k<NUM_BIN+2; k++)
     {
-       printf("%i \n", hist_array[k]);
+       fprintf(outfile, "%i \n", hist_array[k]);
         total += hist_array[k];
     }
     printf("total: %lu \n", total);
+    
+    fclose(infile);
+    fclose(outfile);
 
     free(pos_x);
     free(pos_y);
