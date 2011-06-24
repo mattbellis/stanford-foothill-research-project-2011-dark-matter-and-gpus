@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 500
+#define SUBMATRIX_SIZE 50000
 #define NUM_BIN 100
 #define HIST_MIN 0.0
 #define HIST_MAX 3e9
