@@ -207,8 +207,6 @@ int main(int argc, char **argv)
                     hist_array[bin_index] += hist[m];
                 }    
                 //printf("\n");
-
-          printf("dddddddddddddddddddddddddd");
         }  
     }
 
@@ -218,21 +216,17 @@ int main(int argc, char **argv)
         for(int i=0; i<SUBMATRIX_SIZE; i++)
             hist_array[j] += hist[i*(NUM_BIN + 2)+j];
     */
-printf("sldkjlkj");
     unsigned long total = 0;
-    unsigned long bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
-    unsigned long mid_bin = ( HIST_MAX - HIST_MIN) / NUM_BIN / 2;
-    float bins[NUM_BIN+2];
-    
+    float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
+    float bins_mid = 0;
 
-
-    for(int k=0, i = 0; k<NUM_BIN+2, i<HIST_MAX; k++, i+=bin_width)
+    for(int k=0; k<NUM_BIN+2; k++)
     {
-       if(k == 0 || k == NUM_BIN+1)
-          bins[k] = 0.0;
+       if(k>0)
+          bins_mid = bin_width*(k - 0.5);
        else 
-          bins[k] = mid_bin*(2*i +1);
-       fprintf(outfile, "%f %i \n", bins[k], hist_array[k]);
+          bins_mid = -1.;
+       fprintf(outfile, "%.3e %s %i \n", bins_mid, ",",  hist_array[k]);
        total += hist_array[k];
     }
     printf("total: %lu \n", total);
