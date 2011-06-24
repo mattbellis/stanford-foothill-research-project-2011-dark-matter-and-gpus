@@ -219,7 +219,8 @@ int main(int argc, char **argv)
     unsigned long total = 0;
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
-
+    
+    fprintf(outfile, "%s %s %s \n", "Bins", ",", "Histogram data"); 
     for(int k=0; k<NUM_BIN+2; k++)
     {
        if(k>0)
