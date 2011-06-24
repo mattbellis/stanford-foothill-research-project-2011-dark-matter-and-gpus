@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define SUBMATRIX_SIZE 50000
+#define SUBMATRIX_SIZE 500
 #define NUM_BIN 100
 #define HIST_MIN 0.0
 #define HIST_MAX 3e9
@@ -208,7 +208,8 @@ int main(int argc, char **argv)
                 }    
                 //printf("\n");
 
-        }
+          printf("dddddddddddddddddddddddddd");
+        }  
     }
 
     // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
@@ -217,12 +218,22 @@ int main(int argc, char **argv)
         for(int i=0; i<SUBMATRIX_SIZE; i++)
             hist_array[j] += hist[i*(NUM_BIN + 2)+j];
     */
-
+printf("sldkjlkj");
     unsigned long total = 0;
-    for(int k=0; k<NUM_BIN+2; k++)
+    unsigned long bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
+    unsigned long mid_bin = ( HIST_MAX - HIST_MIN) / NUM_BIN / 2;
+    float bins[NUM_BIN+2];
+    
+
+
+    for(int k=0, i = 0; k<NUM_BIN+2, i<HIST_MAX; k++, i+=bin_width)
     {
-       fprintf(outfile, "%i \n", hist_array[k]);
-        total += hist_array[k];
+       if(k == 0 || k == NUM_BIN+1)
+          bins[k] = 0.0;
+       else 
+          bins[k] = mid_bin*(2*i +1);
+       fprintf(outfile, "%f %i \n", bins[k], hist_array[k]);
+       total += hist_array[k];
     }
     printf("total: %lu \n", total);
     
