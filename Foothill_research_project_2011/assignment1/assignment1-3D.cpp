@@ -168,7 +168,7 @@ int main(int argc, char **argv)
       cout << dist << ",";
       for (int i=0;i<NUM_PARTICLES;i++) 
       {
-         DisplayCoordinates(pos[i][0], pos[i][1], pos[i][2], vel[i][0], acc[i][0]); 
+         DisplayCoordinates(pos[i][0], pos[i][1], pos[i][2], vel[i][0],vel[i][1]); 
       }
 
       cout << endl;
