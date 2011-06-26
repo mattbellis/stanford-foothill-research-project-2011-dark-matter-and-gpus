@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    FILE *infile, *outfile;
+    FILE *infile, *outfile ;
     infile = fopen(argv[1],"r");
     outfile = fopen(argv[2], "w");
 
@@ -220,7 +220,10 @@ int main(int argc, char **argv)
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
     
-    fprintf(outfile, "%s %s %s \n", "Bins", ",", "Histogram data"); 
+
+    unsigned long total = 0;
+    
+     
     for(int k=0; k<NUM_BIN+2; k++)
     {
        if(k>0)
