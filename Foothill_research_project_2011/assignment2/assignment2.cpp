@@ -34,11 +34,11 @@ int main(int argc, char **argv)
     }
 
     ifstream infile(argv[1]); 
-    
+
     ofstream outfile_diag(argv[2]);
-    
+
     ofstream outfile_pos(argv[3]);
- 
+
     ////////////////////////////////////////////////////////////////////////////
     // Read in the config file
     ////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     double k;
     double max_force = 0.0, max_vel = 0.0, max_accel=0.0;
     double vel_magn =0.0, accel_magn =0.0;
-    
+
     outfile_pos << NUM_PARTICLES << endl;
 
     double local_dist = 0.0;
@@ -109,31 +109,31 @@ int main(int argc, char **argv)
     double Gm1m2 = 0.0, eps = 1e7;
 
     int prev_time_printed_out = 0.0;
-    
+
     double accel_magn_part= 0.0, vel_magn_part= 0.0;
     double momentum_total = 0.0, momentum_sq; 
     double kinetik_total = 0.0, potent_total = 0.0, energy_total = 0.0;
-  
+
     outfile_diag << "Time," << "Max_Force," << "Max_Velocity," << "Max_Acceleration,"
-                << "Total_Momentum," << "Total_Energy," << "Total_Kinetik," << "Total_Potential\n";
+        << "Total_Momentum," << "Total_Energy," << "Total_Kinetik," << "Total_Potential\n";
     while(true)
     {
-        
+
         ///////////////////////////////////////////////////////////////////////
         // Write out how many steps we've taken
         ///////////////////////////////////////////////////////////////////////
         if(num_time_steps > 250000)
-           exit(1);
+            exit(1);
         if (num_time_steps%10000==0)
         {
             cerr << num_time_steps << endl;
         }
-      ///////////////////////////////////////////////////////////////////////
-            
+        ///////////////////////////////////////////////////////////////////////
+
         for(int i=0; i<NUM_PARTICLES; i++)
         {
-	    for(int m=0; m < 3; m++)
-		force_total[i][m]=0.0;
+            for(int m=0; m < 3; m++)
+                force_total[i][m]=0.0;
             for(int j=0; j<NUM_PARTICLES; j++)
             {
                 if(i != j)
@@ -148,15 +148,15 @@ int main(int argc, char **argv)
                     //force = GravForce(GRAV_CONST, mass[i], mass[j], local_dist); 
                     Gm1m2 = GRAV_CONST* mass[i]* mass[j];
                     force_part = Gm1m2/local_dist_cubed;
-                    
-		    if(i < j)
-		    {
-                       potent_total += Gm1m2 / local_dist;
+
+                    if(i < j)
+                    {
+                        potent_total += Gm1m2 / local_dist;
                     }
 
                     force = Gm1m2 / local_dist_sq;
                     if(force > max_force)
-                       max_force = force;
+                        max_force = force;
                     x = pos[j][0] - pos[i][0];
 
                     y = pos[j][1] - pos[i][1];
@@ -190,23 +190,26 @@ int main(int argc, char **argv)
             vel_magn = sqrt(vel_magn_part);
             accel_magn = sqrt(accel_magn_part);
             if(vel_magn > max_vel)
-               max_vel = vel_magn;
+                max_vel = vel_magn;
             if(accel_magn > max_accel)
-               max_accel = accel_magn;
+                max_accel = accel_magn;
 
             kinetik_total += 0.5 * mass[i] * vel_magn_part;
+
+            potent_total *= -1.0; 
+            energy_total += kinetik_total + potent_total;
 
             vel_magn_part = 0.0;
             accel_magn_part = 0.0;
         }
-        
+
 	potent_total *= -1.0; 
 	energy_total += kinetik_total + potent_total;
         
         momentum_sq = 0.0;
         for(int k= 0; k<3; k++)
         {
-          momentum_sq += mom_comp[k] * mom_comp[k];
+            momentum_sq += mom_comp[k] * mom_comp[k];
         }
         momentum_total = sqrt(momentum_sq);   
         ////////////////////////////////////////////////////////////////////////
@@ -246,7 +249,7 @@ int main(int argc, char **argv)
         ////////////////////////////////////////////////////////////////////////
         /// Write the data into diagnostic and output files 
         ///////////////////////////////////////////////////////////////////////
-        
+
         current_time += time;
 	//if (num_time_steps > 4e6)
 	//if (1)
@@ -276,12 +279,15 @@ int main(int argc, char **argv)
            prev_time_printed_out = current_time;
        }
 
-       num_time_steps++;
-       max_force = 0.0;
-       max_accel = 0.0; 
-       max_vel = 0.0;
-       momentum_total = 0.0;
-       kinetik_total = 0.0; potent_total = 0.0; energy_total = 0.0;
+            outfile_pos << endl;
+        }
+
+        num_time_steps++;
+        max_force = 0.0;
+        max_accel = 0.0; 
+        max_vel = 0.0;
+        momentum_total = 0.0;
+        kinetik_total = 0.0; potent_total = 0.0; energy_total = 0.0;
     }
     outfile_diag.close();
     outfile_pos.close();
