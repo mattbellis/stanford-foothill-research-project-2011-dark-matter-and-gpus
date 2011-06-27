@@ -219,10 +219,6 @@ int main(int argc, char **argv)
     unsigned long total = 0;
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
-    
-
-    unsigned long total = 0;
-    
      
     for(int k=0; k<NUM_BIN+2; k++)
     {
@@ -230,8 +226,11 @@ int main(int argc, char **argv)
           bins_mid = bin_width*(k - 0.5);
        else 
           bins_mid = -1.;
-       fprintf(outfile, "%.3e %s %i \n", bins_mid, ",",  hist_array[k]);
+       fprintf(outfile, "%.3e %s %lu \n", bins_mid, ",",  hist_array[k]);
+printf("hist: %lu \n", hist_array[k]);
        total += hist_array[k];
+
+printf("total: %lu \n", total);
     }
     printf("total: %lu \n", total);
     
