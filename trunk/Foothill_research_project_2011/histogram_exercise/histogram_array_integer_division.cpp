@@ -6,7 +6,7 @@
 
 #include<string>
 
-#define N 100
+#define N 10
 #define MIN 0.0
 #define MAX 10.0
 
