@@ -7,14 +7,12 @@ using namespace std;
 #define SUBMATRIX_SIZE 10000
 #define NUM_BIN 100
 #define HIST_MIN 0.0
-#define HIST_MAX 2 
+#define HIST_MAX 3.5 
 
 ////////////////////////////////////////////////////////////////////////
 __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
 {
 
-
-    //int idx = xind * blockDim.x + yind;
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     int thread_idx = idx;
     idx += xind;
@@ -22,18 +20,15 @@ __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
     float alpha = a[idx], delta = d[idx];
     float cos_d1 = cos(delta), sin_d1 = sin(alpha), dist;
 
-    //int max = SUBMATRIX_SIZE*
-
     int ymax = yind + SUBMATRIX_SIZE;
     int bin_index; 
     int offset = 0;
 
     float a_diff, sin_a_diff, cos_a_diff;
-    float cos_d2, sin_d2, numer, denom, num, mult1, mult2;    
+    float cos_d2, sin_d2, numer, denom, mult1, mult2;    
 
     for(int i=yind; i<ymax; i++)
     {
-        //if(idx != i)
         if(idx > i)
         {
             a_diff = a[i] - alpha;
@@ -51,16 +46,9 @@ __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
             numer = sqrt(mult1 + mult2); 
        
             denom = sin_d1 *sin_d2 + cos_d1 * cos_d2 * cos_a_diff;
-            num = numer / denom;
             
-            dist = atan(num);  
-
-/*
-            dist_x = x_idx - x[i];
-            dist_y = y_idx - y[i];
-            dist_z = z_idx - z[i];
-            dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
-*/          
+            dist = atan2(numer, denom);  
+          
             if(dist < HIST_MIN)
                 bin_index = 0; 
             else if(dist >= HIST_MAX)
@@ -241,7 +229,8 @@ int main(int argc, char **argv)
     unsigned long total = 0;
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
-     
+
+    fprintf(outfile, "%s %s\n", "Bins,","HIstogram data");      
     for(int k=0; k<NUM_BIN+2; k++)
     {
        if(k>0)
