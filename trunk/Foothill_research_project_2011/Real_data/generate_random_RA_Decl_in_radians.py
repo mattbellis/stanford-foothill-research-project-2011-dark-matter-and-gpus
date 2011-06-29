@@ -93,7 +93,7 @@ def main():
     nparticles = int(options.nparticles)
     ############################################################################
     ############################################################################
-
+    print "Right_Ascension , Declination"
     # Generate the config file
     print nparticles
 
@@ -103,23 +103,23 @@ def main():
         mass = [0.0]
         if mass_flat:
             mass[0] = mass_range*np.random.random_sample()
-            output += "%0.4f, " % (mass[0])
+            output += "%0.4f , " % (mass[0])
         else:
             # Make sure value is positive
             while mass[0]<=0.0:
                 mass = np.random.normal(mass_mean, mass_width,1)
-            output += "%0.4f, " % (mass[0])
+            output += "%0.4f , " % (mass[0])
 
         # Generate the initial position either from a flat or Gaussian distribution.
         pos = [0.0]
         if pos_flat:
             pos[0] = 2.0*pos_range*np.random.random_sample() - pos_range
-            output += "%0.4f " % (pos[0])
+            output += "%0.4f , " % (pos[0])
         else:
             # Make sure value is positive
             while pos[0]<=0.0:
                 pos = np.random.normal(pos_mean, pos_width,1)
-            output += "%0.4f, " % (pos[0])
+            output += "%0.4f , " % (pos[0])
 
         print output
     

@@ -5,7 +5,7 @@
 using namespace std;
 
 #define SUBMATRIX_SIZE 10000
-#define NUM_BIN 500
+#define NUM_BIN 100
 #define HIST_MIN 0.0
 #define HIST_MAX 3.5 
 
@@ -123,12 +123,12 @@ int main(int argc, char **argv)
     // Read in the cluster_data file
     ////////////////////////////////////////////////////////////////////////////
 
-    // char axis_titles[256];
+    char axis_titles[256];
     char dummy[256];
 
+    fscanf(infile, "%s %s %s", &axis_titles, &dummy, &axis_titles);
     fscanf(infile, "%d", &NUM_PARTICLES);
-    //fscanf(infile, "%s %s %s %s", &axis_titles, &dummy, &axis_titles, &dummy);
-
+   
     int size = NUM_PARTICLES * sizeof(float);    
     printf("# particles: %d\n",NUM_PARTICLES);
 
@@ -139,7 +139,8 @@ int main(int argc, char **argv)
     for(int i=0; i<NUM_PARTICLES; i++)
     {
         fscanf(infile, "%f %s %f %s ", &h_alpha[i], &dummy, &h_delta[i], &dummy);
-        //printf("%e %s %e %s %e %s\n", pos_x[i], dummy, pos_y[i], dummy, pos_z[i], dummy);
+       //fscanf(infile, "%f%s %f ", &h_alpha[i], &dummy, &h_delta[i]);
+       // printf("%e %s %e\n", h_alpha[i], dummy, h_delta[i]);
     }
     ////////////////////////////////////////////////////////////////////////////
     //allocation of histogram
