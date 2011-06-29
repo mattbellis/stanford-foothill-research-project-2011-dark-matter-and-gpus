@@ -42,7 +42,7 @@ def main():
     # Make a figure on which to plot stuff.
         
     fig1 = plt.figure(figsize=(12, 8), dpi=90, facecolor='w', edgecolor='k')
-#    fig2 = plt.figure(figsize=(12, 8), dpi=90, facecolor='w', edgecolor='k')
+    fig2 = plt.figure(figsize=(12, 8), dpi=90, facecolor='w', edgecolor='k')
     #
     # Usage is XYZ: X=how many rows to divide.
     #               Y=how many columns to divide.
@@ -53,7 +53,7 @@ def main():
     for i in range(1,2):
         division = 110 + i
         subplots.append(fig1.add_subplot(division))
-     #   subplots.append(fig2.add_subplot(division))
+        subplots.append(fig2.add_subplot(division))
         
     ################################################################################
     ################################################################################
@@ -88,8 +88,8 @@ def main():
     y_index = int(options.y_index)
 
 
-    x_pts = ([],[])
-    y_pts = ([],[])  
+    x_pts = ([],[],[])
+    y_pts = ([],[],[])  
     xaxis_title = ""
     yaxis_title = ""
    
@@ -108,37 +108,42 @@ def main():
                 yaxis_title = row[y_index]
         # Otherwise, it is data
             elif len(row)>y_index and i>0 and i%plot_every_nth_point==0:
-        #        nvalues = len(row)
+                #        nvalues = len(row)
         #       for k in range(0,nvalues):
-	#          print row[0]
+	#           print row[0]
+                
                 x_pts[j].append(float(row[0]))
                 y_pts[j].append(float(row[1]))
-
+                if j == 1:
+                    x_pts[j+1].append(float(row[0]))
+                    y_pts[j+1].append(float(y_pts[row[j-1]] / y_pts[row[j]]))
             i += 1
     
     myplots = []
-    formatting = ['ro','bo']
-    leg_text = ["real RA_Declination data", "random RA_Declination data"]
+    formatting = ['ro','bo', 'go']
+    leg_text = ["real RA_Declination data", "random RA_Declination data", "ratio of real and random RA_Dec data"]
     for i in range(0,2):
         print x_pts[i]
         print y_pts[i]
-        myplots.append(subplots[0].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
+        if i<2 
+           myplots.append(subplots[0].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
+        else
 #    for i in range(3,5):
-#        myplots.append(subplots[1].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
+           myplots.append(subplots[1].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
 
 #    subplots[0].xaxis.set_major_formatter(formatter)
 
     subplots[0].set_xlabel(xaxis_title, fontsize=14, weight='bold')
     subplots[0].set_ylabel(yaxis_title, fontsize=14, weight='bold')
    
-#    subplots[1].set_xlabel(xaxis_title, fontsize=14, weight='bold')
-#    subplots[1].set_ylabel(yaxis_title, fontsize=14, weight='bold')
+    subplots[1].set_xlabel(xaxis_title, fontsize=14, weight='bold')
+    subplots[1].set_ylabel(yaxis_title, fontsize=14, weight='bold')
 
  # subplots[0].set_xlim(1.5e9)
    # subplots[0].set_ylim(1.5e9)
     fig1.legend((myplots[0],myplots[1]), (leg_text[0], leg_text[1]), 'upper right',1)
   
-#    fig2.legend((myplots[3], myplots[4]), (leg_text[3], leg_text[4]), 'upper right', 1)
+    fig2.legend((myplots[2]),(leg_text[2]), 'upper right', 1)
    
     infile_basename = filename[0].split('/')[-1].split('.')[0] 
     output_file_name = "plot_together_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)
