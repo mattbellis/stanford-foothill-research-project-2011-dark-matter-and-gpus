@@ -4,7 +4,7 @@
 #include<math.h>
 using namespace std;
 
-#define SUBMATRIX_SIZE 100
+#define SUBMATRIX_SIZE 10000
 #define NUM_BIN 500
 #define HIST_MIN 0.0
 #define HIST_MAX 3.5 
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
     {
         fscanf(infile, "%f %s %f %s ", &h_alpha[i], &dummy, &h_delta[i], &dummy);
        //fscanf(infile, "%f%s %f ", &h_alpha[i], &dummy, &h_delta[i]);
-        printf("%e %s %e\n", h_alpha[i], dummy, h_delta[i]);
+       // printf("%e %s %e\n", h_alpha[i], dummy, h_delta[i]);
     }
     ////////////////////////////////////////////////////////////////////////////
     //allocation of histogram
