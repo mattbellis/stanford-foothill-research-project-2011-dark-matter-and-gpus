@@ -5,7 +5,7 @@
 using namespace std;
 
 #define SUBMATRIX_SIZE 10000
-#define NUM_BIN 100
+#define NUM_BIN 500
 #define HIST_MIN 0.0
 #define HIST_MAX 3.5 
 
@@ -233,10 +233,10 @@ int main(int argc, char **argv)
     fprintf(outfile, "%s %s\n", "Bins,","HIstogram data");      
     for(int k=0; k<NUM_BIN+2; k++)
     {
-       if(k>0)
+     //  if(k>0)
           bins_mid = bin_width*(k - 0.5);
-       else 
-          bins_mid = -1.;
+     //  else 
+       //   bins_mid = -1.;
        fprintf(outfile, "%.3e %s %lu \n", bins_mid, ",",  hist_array[k]);
        total += hist_array[k];
 
