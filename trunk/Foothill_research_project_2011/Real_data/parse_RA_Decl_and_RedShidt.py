@@ -12,7 +12,7 @@ infile = open(infilename,'r')
 outfilename = sys.argv[2] 
 outfile = open(outfilename,'w+')
 
-output = "RA, Declination , Red_shift\n"
+output = "Right_Ascension , Declination\n"
 outfile.write(output)
 
 output = "%i\n" % (num_lines)
