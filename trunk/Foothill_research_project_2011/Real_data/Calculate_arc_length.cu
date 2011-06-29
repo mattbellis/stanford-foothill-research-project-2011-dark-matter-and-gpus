@@ -47,8 +47,15 @@ __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
        
             denom = sin_d1 *sin_d2 + cos_d1 * cos_d2 * cos_a_diff;
             
-            dist = atan2(numer, denom);  
-          
+            //dist = atan(num);  
+            dist = atan2(numer,denom);  
+
+/*
+            dist_x = x_idx - x[i];
+            dist_y = y_idx - y[i];
+            dist_z = z_idx - z[i];
+            dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
+*/          
             if(dist < HIST_MIN)
                 bin_index = 0; 
             else if(dist >= HIST_MAX)
