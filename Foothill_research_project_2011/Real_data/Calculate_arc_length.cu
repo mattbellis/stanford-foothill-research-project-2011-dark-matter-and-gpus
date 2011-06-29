@@ -18,7 +18,7 @@ __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
     idx += xind;
 
     float alpha = a[idx], delta = d[idx];
-    float cos_d1 = cos(delta), sin_d1 = sin(alpha), dist;
+    float cos_d1 = cos(delta), sin_d1 = sin(delta), dist;
 
     int ymax = yind + SUBMATRIX_SIZE;
     int bin_index; 
