@@ -97,7 +97,7 @@ def main():
     for j in range(0,2):
         i=0 
         for row in infile[j]:
-            print row
+        #    print row
             if i%10000==0:
                print i
 
@@ -114,22 +114,27 @@ def main():
                 
                 x_pts[j].append(float(row[0]))
                 y_pts[j].append(float(row[1]))
-                if j == 1:
-                    x_pts[j+1].append(float(row[0]))
-                    y_pts[j+1].append(float(y_pts[row[j-1]] / y_pts[row[j]]))
-            i += 1
-    
+            
+            i += 1 
+    num = len(x_pts[0])
+    for i in range(0, num):
+        x_pts[2].append(float(x_pts[0][i]))
+        
+        if y_pts[1][i] > 0:
+            y_pts[2].append(float(y_pts[0][i]) / float(y_pts[1][i]))
+        else:       
+            y_pts[2].append(0)
     myplots = []
     formatting = ['ro','bo', 'go']
     leg_text = ["real RA_Declination data", "random RA_Declination data", "ratio of real and random RA_Dec data"]
-    for i in range(0,2):
-        print x_pts[i]
-        print y_pts[i]
-        if i<2 
-           myplots.append(subplots[0].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
-        else
+    for i in range(0,3):
+ #       print x_pts[i]
+ #       print y_pts[i]
+        if i < 2: 
+           myplots.append(subplots[0].plot(x_pts[i], y_pts[i], formatting[i], markersize=2))
+        else:
 #    for i in range(3,5):
-           myplots.append(subplots[1].plot(x_pts[i], y_pts[i], formatting[i], markersize=10))
+           myplots.append(subplots[1].plot(x_pts[i], y_pts[i], formatting[i], markersize=2))
 
 #    subplots[0].xaxis.set_major_formatter(formatter)
 
@@ -143,7 +148,7 @@ def main():
    # subplots[0].set_ylim(1.5e9)
     fig1.legend((myplots[0],myplots[1]), (leg_text[0], leg_text[1]), 'upper right',1)
   
-    fig2.legend((myplots[2]),(leg_text[2]), 'upper right', 1)
+#    fig2.legend((myplots[2]),(leg_text[2]), 'upper right', 1)
    
     infile_basename = filename[0].split('/')[-1].split('.')[0] 
     output_file_name = "plot_together_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)

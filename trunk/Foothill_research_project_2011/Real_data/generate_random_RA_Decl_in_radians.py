@@ -97,12 +97,17 @@ def main():
     # Generate the config file
     print nparticles
 
-    for i in range(nparticles):
+    #for i in range(nparticles):
+    i=0
+    while (i<nparticles):
         output = ""
         # Generate the mass either from a flat or Gaussian distribution.
         mass = [0.0]
         if mass_flat:
-            mass[0] = mass_range*np.random.random_sample()
+            #value = 2.0*mass_range*np.random.random_sample() - mass_range
+            mass[0] = mass_range*np.random.random_sample() 
+            #mass[0] = 2.0*acos(value)
+            #print value
             output += "%0.4f , " % (mass[0])
         else:
             # Make sure value is positive
@@ -113,7 +118,8 @@ def main():
         # Generate the initial position either from a flat or Gaussian distribution.
         pos = [0.0]
         if pos_flat:
-            pos[0] = 2.0*pos_range*np.random.random_sample() - pos_range
+            #pos[0] = 2.0*pos_range*np.random.random_sample() - pos_range
+            pos[0] = acos(2.0*pos_range*np.random.random_sample() - pos_range) - 1.57
             output += "%0.4f , " % (pos[0])
         else:
             # Make sure value is positive
@@ -121,7 +127,13 @@ def main():
                 pos = np.random.normal(pos_mean, pos_width,1)
             output += "%0.4f , " % (pos[0])
 
-        print output
+        value = True
+        if abs(pos[0] - cos(mass[0])) < 0.15:
+            value = False 
+         
+        if value:
+            print output
+            i+=1 
     
     
 

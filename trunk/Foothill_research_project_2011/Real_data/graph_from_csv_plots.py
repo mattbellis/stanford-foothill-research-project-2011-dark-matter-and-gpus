@@ -109,7 +109,7 @@ def main():
     # my_plot = plot(pts[0], pts[1])
     # Points
 
-    my_plot = scatter(pts[0], pts[1])
+    my_plot = scatter(pts[0], pts[1], s = 1)
     
     subplots[0].xaxis.set_major_formatter(formatter)
 
