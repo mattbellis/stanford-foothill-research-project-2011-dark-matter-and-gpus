@@ -49,50 +49,20 @@ __global__ void distance(float *a, float *d, int xind, int yind, int *dev_hist)
             
             //dist = atan(num);  
             dist = atan2(numer,denom);  
-
-/*
-            dist_x = x_idx - x[i];
-            dist_y = y_idx - y[i];
-            dist_z = z_idx - z[i];
-            dist = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
-*/          
             if(dist < HIST_MIN)
                 bin_index = 0; 
             else if(dist >= HIST_MAX)
                 bin_index = NUM_BIN + 1;
             else
                 bin_index = int(((dist - HIST_MIN) * NUM_BIN / HIST_MAX) +1);    
-                //bin_index = 5;
-
-            //dev_hist[bin_index]++;
 
             offset = ((NUM_BIN+2)*thread_idx);
             bin_index += offset;
 
-           //dev_hist[i] = xind;
-           //dev_hist[i+idx] = idx;
            dev_hist[bin_index]++;
 
-           //dev_hist[0+offset] = blockDim.x;
-           //dev_hist[1+offset] = blockIdx.x;
-           //dev_hist[2+offset] = threadIdx.x;
-           //dev_hist[3+offset] = thread_idx;
-           //dev_hist[4+offset] = idx;
-           //dev_hist[5+offset] = yind;
-           //dev_hist[6+offset] = ymax;
         }
     }
-    //dev_hist[0 + (threadIdx.x*12)] = threadIdx.x;
-    /*
-    for (int i=0;i<10;i++)
-    {
-        offset = i*12;
-        //offset = 0.0;
-        dev_hist[threadIdx.x+offset] = threadIdx.x;
-        //dev_hist[offset] = threadIdx.x;
-        //dev_hist[offset] = 999;
-    }
-    */
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -228,12 +198,6 @@ int main(int argc, char **argv)
         }  
     }
 
-    // cudaMemcpy(hist, dev_hist, size_hist, cudaMemcpyDeviceToHost);
-    /*
-    for(int j=0; j<NUM_BIN+2; j++)
-        for(int i=0; i<SUBMATRIX_SIZE; i++)
-            hist_array[j] += hist[i*(NUM_BIN + 2)+j];
-    */
     unsigned long total = 0;
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
@@ -241,10 +205,7 @@ int main(int argc, char **argv)
     fprintf(outfile, "%s %s\n", "Bins,","HIstogram data");      
     for(int k=0; k<NUM_BIN+2; k++)
     {
-     //  if(k>0)
           bins_mid = bin_width*(k - 0.5);
-     //  else 
-       //   bins_mid = -1.;
        fprintf(outfile, "%.3e %s %lu \n", bins_mid, ",",  hist_array[k]);
        total += hist_array[k];
 

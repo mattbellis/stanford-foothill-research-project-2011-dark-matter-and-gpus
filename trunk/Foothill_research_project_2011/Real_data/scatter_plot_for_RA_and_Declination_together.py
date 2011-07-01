@@ -147,13 +147,24 @@ def main():
  # subplots[0].set_xlim(1.5e9)
    # subplots[0].set_ylim(1.5e9)
     fig1.legend((myplots[0],myplots[1]), (leg_text[0], leg_text[1]), 'upper right',1)
+ 
+    fig2.legend([myplots[2]],[leg_text[2]], 'upper right', 1)
+    
   
-#    fig2.legend((myplots[2]),(leg_text[2]), 'upper right', 1)
-   
-    infile_basename = filename[0].split('/')[-1].split('.')[0] 
-    output_file_name = "plot_together_%s_x%d_y%d.png" % (infile_basename,x_index,y_index)
-    plt.savefig(output_file_name)
+    infile_basename2 = filename[0].split('/')[-1].split('.')[0] 
+    output_file_name2 = "plot_together_%s_x%d_y%d.png" % (infile_basename2,x_index,y_index)
+    plt.savefig(output_file_name2)
     plt.show()
+
+
+#   infile_basename = []
+#    output_file_name = []
+#    for i in range(0,2):
+#   	infile_basename.append(filename[i].split('/')[-1].split('.')[0]) 
+#  	output_file_name.append("plot_together_%s_x%d_y%d.png" % (infile_basename[i],x_index,y_index))
+#    	plt.savefig(output_file_name[i])
+#        plt.clf()
+#    plt.show()
 
 ################################################################################
 # Top-level script evironment
