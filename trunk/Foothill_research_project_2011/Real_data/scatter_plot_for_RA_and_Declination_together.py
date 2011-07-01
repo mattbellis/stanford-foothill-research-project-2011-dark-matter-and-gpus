@@ -153,7 +153,7 @@ def main():
   
     infile_basename2 = filename[0].split('/')[-1].split('.')[0] 
     output_file_name2 = "plot_together_%s_x%d_y%d.png" % (infile_basename2,x_index,y_index)
-    plt.savefig(output_file_name2)
+    plt.savefig(output_file_name2,fig1)
     plt.show()
 
 

@@ -202,7 +202,7 @@ int main(int argc, char **argv)
     float  bin_width = (HIST_MAX - HIST_MIN) / NUM_BIN;
     float bins_mid = 0;
 
-    fprintf(outfile, "%s %s\n", "Bins,","HIstogram data");      
+    fprintf(outfile, "%s %s\n", "Angular Distance(radians)","Number of Entries");      
     for(int k=0; k<NUM_BIN+2; k++)
     {
           bins_mid = bin_width*(k - 0.5);
