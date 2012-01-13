@@ -127,6 +127,8 @@ def main():
                 pos = np.random.normal(pos_mean, pos_width,1)
             output += "%0.4f , " % (pos[0])
 
+        ############### Do some acceptance correction by cutting out some stars
+        ############### in a swath.
         value = True
         if abs(pos[0] - cos(mass[0])) < 0.15:
             value = False 
