@@ -1,25 +1,21 @@
 # Makefile
 #
 # author      : Matt Bellis
-# date        : Jan., 2011
+# date        : Jan., 2012
 # discription : generic Makefile for making cuda programs
 #
 BIN               := a.out
 
-# flags
-#COMMONFLAGS       := -D_DEBUG -O0 -g
-#COMMONFLAGS       := -m64 
-##$(shell root-config --cflags)
-
+SDK_INSTALL_PATH  := /home/bellis/NVIDIA_GPU_Computing_SDK
 CUDA_INSTALL_PATH := /usr/
-#INCLUDES          += -I. -I/home/bellis/NVIDIA_GPU_Computing_SDK/C/common/inc/ $(shell root-config --cflags)
-#LIBS              := -L/usr/local/cuda/lib/ $(shell root-config --libs) 
-INCLUDES          += -I. -I/home/bellis/NVIDIA_GPU_Computing_SDK/C/common/inc/ -I$(CUDA_INSTALL_PATH)/include/
-LIBS          += -L. -L/home/bellis/NVIDIA_GPU_Computing_SDK/C/lib/ -L$(CUDA_INSTALL_PATH)//usr/lib/x86_64-linux-gnu/
-#INCLUDES              := -L$(CUDA_INSTALL_PATH)/include/ 
-#LIBS              := -L$(CUDA_INSTALL_PATH)/lib64/ 
+
+# flags
+
+INCLUDES          += -I. -I$(SDK_INSTALL_PATH)/C/common/inc/ -I$(CUDA_INSTALL_PATH)/include/
+LIBS              += -L. -L$(SDK_INSTALL_PATH)/C/lib/ -L$(CUDA_INSTALL_PATH)//usr/lib/x86_64-linux-gnu/
+
 CXXFLAGS          := $(COMMONFLAGS)
-#LDFLAGS           := -lrt -lm -lcudart -lcutil
+
 #LDFLAGS := -lSystem.B -lm -lcudart -lcutil_x86_64 
 #LDFLAGS := -lm -lcudart 
 LDFLAGS := -lcudart
@@ -29,7 +25,6 @@ LDFLAGS := -lcudart
 NVCC              := $(CUDA_INSTALL_PATH)/bin/nvcc -arch sm_11 $(COMMONFLAGS)
 
 # files
-#CPP_SOURCES       := mytestroot.cpp  
 CPP_SOURCES       := 
 CU_SOURCES        := Calculate_arc_length.cu
 HEADERS           := $(wildcard *.h)
