@@ -76,9 +76,9 @@ def main():
     infiles[2] = csv.reader(open(filename2, 'rb'), delimiter=',', quotechar='#')
     ############################################################################
 
-    formatter = ScalarFormatter()
-    formatter.set_scientific(True)
-    formatter.set_powerlimits((-4,4))
+    #formatter = ScalarFormatter()
+    #formatter.set_scientific(True)
+    #formatter.set_powerlimits((-4,4))
     
     plt.xticks(fontsize=14, weight='bold')
     plt.yticks(fontsize=14, weight='bold')
@@ -100,7 +100,7 @@ def main():
                 print i
 
             if len(row)>1 and i>0 and i%plot_every_nth_point==0:
-                print "%d %f" % (i,float(row[1]))
+                print "%d %f %f" % (i,float(row[0]),float(row[1]))
                 pts[j][0].append(float(row[0]))
                 pts[j][1].append(float(row[1]))
                 # pts[1].append(log10(float(row[y_index])))
@@ -119,34 +119,37 @@ def main():
     npts = len(pts[0][0])
     for i in range(0,npts):
 
-        #xpts.append(log10(pts[0][0][i]))
+        print pts[0][0][i]
 
-        dd = pts[0][1][i]
-        rr = pts[1][1][i]
+        dd = pts[0][1][i]/2.0
+        rr = pts[1][1][i]/2.0
         dr = pts[2][1][i]
 
         w = 0.0 
         if rr>0:
 
-            w = (dd-(2*dr)+rr)/rr
+            #w = (2*dd-(2*dr)+2*rr)/(2*rr)
+            w = (dd-(1*dr)+rr)/(rr)
 
-            xpts.append(degrees(pts[0][0][i]))
+            xpts.append(pts[0][0][i])
             ypts.append(w)
             #print "%f %f" % (degrees(pts[0][0][i]),w)
 
-    #print xpts
-    #print ypts
-    my_plot = scatter(xpts, ypts, s = 1)
+    print len(xpts)
+    print len(ypts)
+    print xpts
+    print ypts
+    my_plot = scatter(xpts, ypts, s = 10)
     
-    subplots[0].xaxis.set_major_formatter(formatter)
+    #subplots[0].xaxis.set_major_formatter(formatter)
 
     subplots[0].set_xlabel(r"$\theta$ (degrees)", fontsize=24, weight='bold')
     subplots[0].set_ylabel(r"w($\theta$)", fontsize=24, weight='bold')
     subplots[0].set_xscale('log')
     subplots[0].set_yscale('log')
    
-    subplots[0].set_xlim(0.01,60)
-    #subplots[0].set_ylim(0.000000001,10)
+    #subplots[0].set_xlim(0.01,60)
+    subplots[0].set_ylim(0.01,100)
 
  
     #infile_basename = filename.split('/')[-1].split('.')[0] 
