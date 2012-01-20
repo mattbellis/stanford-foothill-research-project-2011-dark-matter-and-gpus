@@ -2,6 +2,10 @@
 #include<string.h>
 #include<stdlib.h>
 #include<math.h>
+
+#include <cuda_runtime.h>
+//#include <cutil_inline.h>
+
 using namespace std;
 
 #define SUBMATRIX_SIZE 10000
