@@ -1,0 +1,1 @@
+This code is used as part of a research project between Stanford and Foothill and deals with n-body simulations and how to map them onto GPU processors. This code is only being used for educational purposes and should not be construed as efficient or even correct.
